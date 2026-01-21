@@ -1,0 +1,45 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: white;
+  border-bottom: 1px solid #dfe1e6;
+}
+
+.header__title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #172b4d;
+  margin: 0;
+}
+
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header__refreshed {
+  font-size: 12px;
+  color: #5e6c84;
+}
+
+.header__refresh-btn {
+  padding: 8px 16px;
+  background: #0052cc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.header__refresh-btn:hover:not(:disabled) {
+  background: #0747a6;
+}
+
+.header__refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

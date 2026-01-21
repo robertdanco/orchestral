@@ -1,19 +1,43 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
 import App from './App';
+import { api } from './api';
+
+vi.mock('./api');
 
 describe('App', () => {
-  it('renders navigation links', () => {
+  beforeEach(() => {
+    vi.mocked(api.getIssues).mockResolvedValue({
+      issues: [],
+      lastRefreshed: new Date().toISOString(),
+    });
+    vi.mocked(api.getHierarchy).mockResolvedValue([]);
+    vi.mocked(api.getActions).mockResolvedValue({
+      blocked: [],
+      stale: [],
+      missingDetails: [],
+      unassigned: [],
+      unestimated: [],
+    });
+  });
+
+  it('renders header and navigation', async () => {
     render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Orchestral')).toBeInTheDocument();
+    });
 
     expect(screen.getByText('Kanban')).toBeInTheDocument();
     expect(screen.getByText('Tree')).toBeInTheDocument();
     expect(screen.getByText('Action Required')).toBeInTheDocument();
   });
 
-  it('shows Kanban view by default', () => {
+  it('shows refresh button', async () => {
     render(<App />);
 
-    expect(screen.getByText(/Kanban View/)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Refresh')).toBeInTheDocument();
+    });
   });
 });
