@@ -1,0 +1,122 @@
+.tree-view {
+  padding: 16px;
+}
+
+.tree-empty {
+  text-align: center;
+  padding: 48px;
+  color: #5e6c84;
+}
+
+.tree-node__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: default;
+}
+
+.tree-node__row:hover {
+  background: #f4f5f7;
+}
+
+.tree-node__toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 20px;
+  font-size: 10px;
+  color: #5e6c84;
+}
+
+.tree-node__spacer {
+  width: 20px;
+}
+
+.tree-node__type {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+}
+
+.tree-node__type--initiative {
+  background: #6554c0;
+}
+
+.tree-node__type--epic {
+  background: #6554c0;
+}
+
+.tree-node__type--story {
+  background: #36b37e;
+}
+
+.tree-node__type--task {
+  background: #0065ff;
+}
+
+.tree-node__type--bug {
+  background: #ff5630;
+}
+
+.tree-node__key {
+  font-size: 12px;
+  color: #0052cc;
+  cursor: pointer;
+}
+
+.tree-node__key:hover {
+  text-decoration: underline;
+}
+
+.tree-node__summary {
+  flex: 1;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.tree-node__status {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: #dfe1e6;
+}
+
+.tree-node__status--todo {
+  background: #dfe1e6;
+  color: #42526e;
+}
+
+.tree-node__status--inprogress {
+  background: #deebff;
+  color: #0747a6;
+}
+
+.tree-node__status--done {
+  background: #e3fcef;
+  color: #006644;
+}
+
+.tree-node__progress {
+  font-size: 12px;
+  color: #5e6c84;
+}
+
+.tree-node__assignee {
+  font-size: 12px;
+  color: #5e6c84;
+  background: #f4f5f7;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.tree-node__children {
+  margin-top: 4px;
+}
