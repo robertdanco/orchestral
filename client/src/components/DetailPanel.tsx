@@ -90,7 +90,7 @@ export function DetailPanel({ item, onClose }: DetailPanelProps) {
 
           {item.blocked && (
             <div className="detail-panel__blocked">
-              <strong>Blocked:</strong> {item.blockedReason || 'No reason provided'}
+              <strong>Blocked by:</strong> {item.blockedReason || 'No reason provided'}
             </div>
           )}
         </div>

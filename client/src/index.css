@@ -16,33 +16,16 @@ body {
   flex-direction: column;
 }
 
-.nav {
+.app__body {
   display: flex;
-  gap: 1rem;
-  padding: 1rem;
-  background: white;
-  border-bottom: 1px solid #ddd;
-}
-
-.nav a {
-  padding: 0.5rem 1rem;
-  text-decoration: none;
-  color: #666;
-  border-radius: 4px;
-}
-
-.nav a:hover {
-  background: #f0f0f0;
-}
-
-.nav a.active {
-  background: #0052cc;
-  color: white;
+  flex: 1;
+  overflow: hidden;
 }
 
 .main {
   flex: 1;
   padding: 1rem;
+  overflow-y: auto;
 }
 
 .main--with-panel {
