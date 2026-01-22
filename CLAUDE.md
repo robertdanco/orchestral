@@ -17,7 +17,7 @@ npm run dev:client       # Client only with hot reload
 # Testing
 npm test                 # Run all tests (server + client)
 npm run test:server      # Server tests only
-npm run test:client      # Client tests only
+cd client && npm test    # Client tests only (no root script)
 cd server && npm run test:watch  # Watch mode for server
 cd client && npm run test:watch  # Watch mode for client
 
@@ -188,6 +188,7 @@ chatService.registerSource(new MySource());
 ## Gotchas
 
 - Client build runs `tsc` first - unused imports (even in test files) cause build failure
+- Unused function parameters should use underscore prefix (e.g., `_options`) to avoid TS6133 errors
 - TreeView nodes at level < 2 start expanded; tests should use `getAllByText` for toggle buttons since multiple exist
 - Server routes only mount when all Jira env vars are set; `/api/health` always works for testing
 - `App.test.tsx` has a pre-existing type error (mock missing `blockers` property) - tests pass at runtime but `tsc --noEmit` fails
