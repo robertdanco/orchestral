@@ -72,7 +72,7 @@ export class JiraClient {
       'issuelinks', 'priority'
     ].join(',');
 
-    const url = `${this.baseUrl}/rest/api/3/search?jql=${encodeURIComponent(jql)}&fields=${fields}&maxResults=1000`;
+    const url = `${this.baseUrl}/rest/api/3/search/jql?jql=${encodeURIComponent(jql)}&fields=${fields}&maxResults=1000`;
 
     const response = await fetch(url, {
       headers: {
