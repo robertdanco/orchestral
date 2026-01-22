@@ -28,6 +28,7 @@ export interface ActionRequiredItem {
 }
 
 export interface ActionRequiredResult {
+  blockers: ActionRequiredItem[];
   blocked: ActionRequiredItem[];
   stale: ActionRequiredItem[];
   missingDetails: ActionRequiredItem[];

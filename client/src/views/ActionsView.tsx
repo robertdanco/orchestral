@@ -13,60 +13,54 @@ interface ActionSectionProps {
 }
 
 function ActionSection({ title, items, onSelectIssue }: ActionSectionProps) {
-  if (items.length === 0) return null;
+  const isEmpty = items.length === 0;
 
   return (
-    <div className="action-section">
+    <div className={`action-section ${isEmpty ? 'action-section--empty' : ''}`}>
       <h3 className="action-section__title">
         {title}
-        <span className="action-section__count">{items.length}</span>
+        <span className={`action-section__count ${isEmpty ? 'action-section__count--zero' : ''}`}>
+          {items.length}
+        </span>
       </h3>
-      <ul className="action-section__list">
-        {items.map(({ item, reason }) => (
-          <li key={item.key} className="action-item">
-            <span
-              className="action-item__key"
-              onClick={() => onSelectIssue(item)}
-            >
-              {item.key}
-            </span>
-            <span className="action-item__summary">{item.summary}</span>
-            <span className="action-item__reason">{reason}</span>
-            <a
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="action-item__link"
-            >
-              Fix in Jira →
-            </a>
-          </li>
-        ))}
-      </ul>
+      {isEmpty ? (
+        <div className="action-section__empty">None</div>
+      ) : (
+        <ul className="action-section__list">
+          {items.map(({ item, reason }) => (
+            <li key={item.key} className="action-item">
+              <span
+                className="action-item__key"
+                onClick={() => onSelectIssue(item)}
+              >
+                {item.key}
+              </span>
+              <span className="action-item__summary">{item.summary}</span>
+              <span className="action-item__reason">{reason}</span>
+              <a
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="action-item__link"
+              >
+                Fix in Jira →
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
 
 export function ActionsView({ actions, onSelectIssue }: ActionsViewProps) {
-  const totalCount =
-    actions.blocked.length +
-    actions.stale.length +
-    actions.missingDetails.length +
-    actions.unassigned.length +
-    actions.unestimated.length;
-
-  if (totalCount === 0) {
-    return (
-      <div className="actions-empty">
-        <div className="actions-empty__icon">✓</div>
-        <div className="actions-empty__text">All clear!</div>
-        <div className="actions-empty__subtext">No items need attention</div>
-      </div>
-    );
-  }
-
   return (
     <div className="actions-view">
+      <ActionSection
+        title="Blockers"
+        items={actions.blockers}
+        onSelectIssue={onSelectIssue}
+      />
       <ActionSection
         title="Blocked"
         items={actions.blocked}

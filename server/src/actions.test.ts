@@ -40,7 +40,37 @@ describe('detectActionRequired', () => {
     const result = detectActionRequired(items, config);
 
     expect(result.blocked).toHaveLength(1);
-    expect(result.blocked[0].reason).toBe('Waiting on API');
+    expect(result.blocked[0].reason).toBe('Blocked by Waiting on API');
+  });
+
+  it('detects blockers when blockedReason matches an issue key', () => {
+    const blockerItem = makeItem({ key: 'PROJ-2', summary: 'API Task' });
+    const blockedItem = makeItem({ key: 'PROJ-1', blocked: true, blockedReason: 'PROJ-2' });
+    const result = detectActionRequired([blockerItem, blockedItem], config);
+
+    expect(result.blockers).toHaveLength(1);
+    expect(result.blockers[0].item.key).toBe('PROJ-2');
+    expect(result.blockers[0].reason).toBe('Blocks [PROJ-1] Test issue');
+    // Also check blocked item uses [ID] Title format
+    expect(result.blocked[0].reason).toBe('Blocked by [PROJ-2] API Task');
+  });
+
+  it('detects blockers when blockedReason matches an issue summary', () => {
+    const blockerItem = makeItem({ key: 'PROJ-2', summary: 'API Task' });
+    const blockedItem = makeItem({ key: 'PROJ-1', blocked: true, blockedReason: 'API Task' });
+    const result = detectActionRequired([blockerItem, blockedItem], config);
+
+    expect(result.blockers).toHaveLength(1);
+    expect(result.blockers[0].item.key).toBe('PROJ-2');
+    expect(result.blockers[0].reason).toBe('Blocks [PROJ-1] Test issue');
+  });
+
+  it('does not list done items as blockers', () => {
+    const blockerItem = makeItem({ key: 'PROJ-2', summary: 'API Task', statusCategory: 'done' });
+    const blockedItem = makeItem({ key: 'PROJ-1', blocked: true, blockedReason: 'PROJ-2' });
+    const result = detectActionRequired([blockerItem, blockedItem], config);
+
+    expect(result.blockers).toHaveLength(0);
   });
 
   it('detects stale items', () => {

@@ -22,6 +22,7 @@ describe('ActionsView', () => {
   };
 
   const mockActions: ActionRequiredResult = {
+    blockers: [{ item: { ...mockItem, key: 'PROJ-4' }, reason: 'Blocks PROJ-1' }],
     blocked: [{ item: { ...mockItem, key: 'PROJ-1' }, reason: 'Blocked by API' }],
     stale: [{ item: { ...mockItem, key: 'PROJ-2' }, reason: 'No updates for 10 days' }],
     missingDetails: [],
@@ -29,12 +30,15 @@ describe('ActionsView', () => {
     unestimated: [],
   };
 
-  it('renders section headers', () => {
+  it('renders all section headers', () => {
     render(<ActionsView actions={mockActions} onSelectIssue={() => {}} />);
 
+    expect(screen.getByText('Blockers')).toBeInTheDocument();
     expect(screen.getByText('Blocked')).toBeInTheDocument();
     expect(screen.getByText('Stale')).toBeInTheDocument();
+    expect(screen.getByText('Missing Details')).toBeInTheDocument();
     expect(screen.getByText('Unassigned')).toBeInTheDocument();
+    expect(screen.getByText('Unestimated')).toBeInTheDocument();
   });
 
   it('shows items with reasons', () => {
@@ -44,8 +48,9 @@ describe('ActionsView', () => {
     expect(screen.getByText('No updates for 10 days')).toBeInTheDocument();
   });
 
-  it('shows all clear message when no actions', () => {
+  it('shows empty state for sections with no items', () => {
     const emptyActions: ActionRequiredResult = {
+      blockers: [],
       blocked: [],
       stale: [],
       missingDetails: [],
@@ -55,6 +60,8 @@ describe('ActionsView', () => {
 
     render(<ActionsView actions={emptyActions} onSelectIssue={() => {}} />);
 
-    expect(screen.getByText('All clear!')).toBeInTheDocument();
+    // All sections should still be visible with "None" text
+    expect(screen.getByText('Blockers')).toBeInTheDocument();
+    expect(screen.getAllByText('None')).toHaveLength(6);
   });
 });
