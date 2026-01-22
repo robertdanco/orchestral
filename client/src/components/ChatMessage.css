@@ -7,12 +7,12 @@
 }
 
 .chat-message--user {
-  background: #f4f5f7;
+  background: var(--color-bg-tertiary);
 }
 
 .chat-message--assistant {
-  background: white;
-  border: 1px solid #dfe1e6;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
 }
 
 .chat-message__avatar {
@@ -28,13 +28,13 @@
 }
 
 .chat-message--user .chat-message__avatar {
-  background: #0052cc;
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-white);
 }
 
 .chat-message--assistant .chat-message__avatar {
-  background: #6554c0;
-  color: white;
+  background: var(--color-epic);
+  color: var(--color-white);
 }
 
 .chat-message__content {
@@ -45,7 +45,7 @@
 .chat-message__text {
   font-size: 14px;
   line-height: 1.6;
-  color: #172b4d;
+  color: var(--color-text-primary);
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -53,7 +53,7 @@
 .chat-message__citation-ref {
   background: none;
   border: none;
-  color: #0052cc;
+  color: var(--color-primary);
   cursor: pointer;
   font-size: inherit;
   font-family: inherit;
@@ -68,13 +68,13 @@
 .chat-message__citations {
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid #dfe1e6;
+  border-top: 1px solid var(--color-border);
 }
 
 .chat-message__citations-label {
   font-size: 11px;
   text-transform: uppercase;
-  color: #5e6c84;
+  color: var(--color-text-muted);
   margin-bottom: 8px;
   display: block;
 }
@@ -90,7 +90,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: #f4f5f7;
+  background: var(--color-bg-tertiary);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -99,18 +99,18 @@
 }
 
 .chat-message__citation:hover {
-  background: #ebecf0;
+  background: var(--color-border-light);
 }
 
 .chat-message__citation-index {
   font-size: 12px;
-  color: #0052cc;
+  color: var(--color-primary);
   font-weight: 600;
 }
 
 .chat-message__citation-title {
   font-size: 13px;
-  color: #172b4d;
+  color: var(--color-text-primary);
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;

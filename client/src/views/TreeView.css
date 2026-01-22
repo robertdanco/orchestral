@@ -5,7 +5,7 @@
 .tree-empty {
   text-align: center;
   padding: 48px;
-  color: #5e6c84;
+  color: var(--color-text-muted);
 }
 
 .tree-node__row {
@@ -18,7 +18,7 @@
 }
 
 .tree-node__row:hover {
-  background: #f4f5f7;
+  background: var(--color-bg-tertiary);
 }
 
 .tree-node__toggle {
@@ -27,7 +27,7 @@
   cursor: pointer;
   width: 20px;
   font-size: 10px;
-  color: #5e6c84;
+  color: var(--color-text-muted);
 }
 
 .tree-node__spacer {
@@ -43,32 +43,36 @@
   border-radius: 3px;
   font-size: 11px;
   font-weight: 600;
-  color: white;
+  color: var(--color-white);
 }
 
 .tree-node__type--initiative {
-  background: #6554c0;
+  background: var(--color-epic);
 }
 
 .tree-node__type--epic {
-  background: #6554c0;
+  background: var(--color-epic);
 }
 
 .tree-node__type--story {
-  background: #36b37e;
+  background: var(--color-story);
 }
 
 .tree-node__type--task {
-  background: #0065ff;
+  background: var(--color-task);
 }
 
 .tree-node__type--bug {
-  background: #ff5630;
+  background: var(--color-bug);
 }
 
 .tree-node__key {
+  background: none;
+  border: none;
+  padding: 0;
   font-size: 12px;
-  color: #0052cc;
+  font-family: inherit;
+  color: var(--color-primary);
   cursor: pointer;
 }
 
@@ -78,41 +82,47 @@
 
 .tree-node__summary {
   flex: 1;
+  background: none;
+  border: none;
+  padding: 0;
   font-size: 14px;
+  font-family: inherit;
+  text-align: left;
   cursor: pointer;
+  color: inherit;
 }
 
 .tree-node__status {
   font-size: 11px;
   padding: 2px 8px;
   border-radius: 3px;
-  background: #dfe1e6;
+  background: var(--color-status-default-bg);
 }
 
 .tree-node__status--todo {
-  background: #dfe1e6;
-  color: #42526e;
+  background: var(--color-status-default-bg);
+  color: var(--color-text-secondary);
 }
 
 .tree-node__status--inprogress {
-  background: #deebff;
-  color: #0747a6;
+  background: var(--color-inprogress-bg);
+  color: var(--color-inprogress-text);
 }
 
 .tree-node__status--done {
-  background: #e3fcef;
-  color: #006644;
+  background: var(--color-done-bg);
+  color: var(--color-done-text);
 }
 
 .tree-node__progress {
   font-size: 12px;
-  color: #5e6c84;
+  color: var(--color-text-muted);
 }
 
 .tree-node__assignee {
   font-size: 12px;
-  color: #5e6c84;
-  background: #f4f5f7;
+  color: var(--color-text-muted);
+  background: var(--color-bg-tertiary);
   padding: 2px 8px;
   border-radius: 12px;
 }

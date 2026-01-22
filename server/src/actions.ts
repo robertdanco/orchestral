@@ -1,23 +1,16 @@
-import { JiraItem } from './types.js';
+import type { JiraItem, ActionRequiredItem, ActionRequiredResult } from '@orchestral/shared';
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 export interface ActionConfig {
   staleDays: number;
   requireEstimates: boolean;
 }
 
-export interface ActionRequiredItem {
-  item: JiraItem;
-  reason: string;
-}
-
-export interface ActionRequiredResult {
-  blockers: ActionRequiredItem[];
-  blocked: ActionRequiredItem[];
-  stale: ActionRequiredItem[];
-  missingDetails: ActionRequiredItem[];
-  unassigned: ActionRequiredItem[];
-  unestimated: ActionRequiredItem[];
-}
+export const DEFAULT_ACTION_CONFIG: ActionConfig = {
+  staleDays: 5,
+  requireEstimates: true,
+};
 
 export function detectActionRequired(
   items: JiraItem[],
@@ -41,7 +34,7 @@ export function detectActionRequired(
   }
 
   const now = new Date();
-  const staleThreshold = config.staleDays * 24 * 60 * 60 * 1000;
+  const staleThreshold = config.staleDays * MS_PER_DAY;
 
   for (const item of items) {
     // Skip done items for most checks
@@ -91,7 +84,7 @@ export function detectActionRequired(
       const updatedAt = new Date(item.updated);
       const age = now.getTime() - updatedAt.getTime();
       if (age > staleThreshold) {
-        const days = Math.floor(age / (24 * 60 * 60 * 1000));
+        const days = Math.floor(age / (MS_PER_DAY));
         result.stale.push({
           item,
           reason: `No updates for ${days} days`,
@@ -118,3 +111,6 @@ export function detectActionRequired(
 
   return result;
 }
+
+// Re-export types for convenience
+export type { ActionRequiredItem, ActionRequiredResult };

@@ -16,8 +16,8 @@
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: #e3fcef;
-  color: #006644;
+  background: var(--color-done-bg);
+  color: var(--color-done-text);
   font-size: 32px;
   display: flex;
   align-items: center;
@@ -28,12 +28,12 @@
 .actions-empty__text {
   font-size: 24px;
   font-weight: 600;
-  color: #172b4d;
+  color: var(--color-text-primary);
 }
 
 .actions-empty__subtext {
   font-size: 14px;
-  color: #5e6c84;
+  color: var(--color-text-muted);
   margin-top: 8px;
 }
 
@@ -47,13 +47,13 @@
   gap: 8px;
   font-size: 16px;
   font-weight: 600;
-  color: #172b4d;
+  color: var(--color-text-primary);
   margin-bottom: 12px;
 }
 
 .action-section__count {
-  background: #ff5630;
-  color: white;
+  background: var(--color-error-light);
+  color: var(--color-white);
   font-size: 12px;
   padding: 2px 8px;
   border-radius: 12px;
@@ -61,17 +61,17 @@
 }
 
 .action-section__count--zero {
-  background: #dfe1e6;
-  color: #5e6c84;
+  background: var(--color-status-default-bg);
+  color: var(--color-text-muted);
 }
 
 .action-section__empty {
   font-size: 14px;
-  color: #5e6c84;
+  color: var(--color-text-muted);
   padding: 12px;
-  background: #fafbfc;
+  background: var(--color-bg-secondary);
   border-radius: 4px;
-  border-left: 3px solid #dfe1e6;
+  border-left: 3px solid var(--color-border);
 }
 
 .action-section__list {
@@ -85,15 +85,19 @@
   align-items: center;
   gap: 12px;
   padding: 12px;
-  background: white;
+  background: var(--color-white);
   border-radius: 4px;
   margin-bottom: 8px;
-  border-left: 3px solid #ff5630;
+  border-left: 3px solid var(--color-error-light);
 }
 
 .action-item__key {
+  background: none;
+  border: none;
+  padding: 0;
   font-size: 12px;
-  color: #0052cc;
+  font-family: inherit;
+  color: var(--color-primary);
   cursor: pointer;
   white-space: nowrap;
 }
@@ -109,15 +113,15 @@
 
 .action-item__reason {
   font-size: 12px;
-  color: #5e6c84;
-  background: #f4f5f7;
+  color: var(--color-text-muted);
+  background: var(--color-bg-tertiary);
   padding: 4px 8px;
   border-radius: 3px;
 }
 
 .action-item__link {
   font-size: 12px;
-  color: #0052cc;
+  color: var(--color-primary);
   text-decoration: none;
   white-space: nowrap;
 }

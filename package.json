@@ -2,10 +2,16 @@
   "name": "orchestral",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "shared",
+    "server",
+    "client"
+  ],
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "cd server && npm run dev",
     "dev:client": "cd client && npm run dev",
+    "build:shared": "cd shared && npm run build",
     "install:all": "npm install && cd server && npm install && cd ../client && npm install",
     "test": "npm run test:server && npm run test:client",
     "test:server": "cd server && npm test",

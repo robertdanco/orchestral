@@ -1,10 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { api } from '../api';
 import type { JiraItem } from '../types';
 
 interface UseIssuesResult {
   issues: JiraItem[];
   loading: boolean;
+  isInitialLoad: boolean;
+  isRefreshing: boolean;
   error: string | null;
   lastRefreshed: Date | null;
   refresh: () => Promise<void>;
@@ -12,34 +14,42 @@ interface UseIssuesResult {
 
 export function useIssues(): UseIssuesResult {
   const [issues, setIssues] = useState<JiraItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+  const hasLoadedOnce = useRef(false);
 
   const fetchIssues = useCallback(async () => {
     try {
-      setLoading(true);
+      if (hasLoadedOnce.current) {
+        setIsRefreshing(true);
+      } else {
+        setIsInitialLoad(true);
+      }
       setError(null);
       const response = await api.getIssues();
       setIssues(response.issues);
       setLastRefreshed(response.lastRefreshed ? new Date(response.lastRefreshed) : null);
+      hasLoadedOnce.current = true;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       setIssues([]);
     } finally {
-      setLoading(false);
+      setIsInitialLoad(false);
+      setIsRefreshing(false);
     }
   }, []);
 
   const refresh = useCallback(async () => {
     try {
-      setLoading(true);
+      setIsRefreshing(true);
       setError(null);
       await api.refresh();
       await fetchIssues();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
-      setLoading(false);
+      setIsRefreshing(false);
     }
   }, [fetchIssues]);
 
@@ -47,5 +57,7 @@ export function useIssues(): UseIssuesResult {
     fetchIssues();
   }, [fetchIssues]);
 
-  return { issues, loading, error, lastRefreshed, refresh };
+  const loading = isInitialLoad || isRefreshing;
+
+  return { issues, loading, isInitialLoad, isRefreshing, error, lastRefreshed, refresh };
 }

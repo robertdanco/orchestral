@@ -11,7 +11,7 @@ interface ChatViewProps {
   onSelectIssue?: (item: JiraItem) => void;
 }
 
-export function ChatView({ onSelectIssue }: ChatViewProps) {
+export function ChatView({ onSelectIssue }: ChatViewProps): JSX.Element {
   const {
     messages,
     isLoading,

@@ -12,7 +12,7 @@ const phaseLabels: Record<ChatProgressType['phase'], string> = {
   synthesizing: 'Generating response...',
 };
 
-export function ChatProgress({ progress }: ChatProgressProps) {
+export function ChatProgress({ progress }: ChatProgressProps): JSX.Element | null {
   if (progress.phase === 'idle') {
     return null;
   }

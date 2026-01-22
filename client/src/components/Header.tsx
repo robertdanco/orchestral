@@ -6,7 +6,7 @@ interface HeaderProps {
   onRefresh: () => void;
 }
 
-export function Header({ lastRefreshed, loading, onRefresh }: HeaderProps) {
+export function Header({ lastRefreshed, loading, onRefresh }: HeaderProps): JSX.Element {
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('en-US', {
       hour: 'numeric',

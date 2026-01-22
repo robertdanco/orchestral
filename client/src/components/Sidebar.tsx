@@ -29,7 +29,7 @@ const sections: Section[] = [
   },
 ];
 
-export function Sidebar() {
+export function Sidebar(): JSX.Element {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(['Task Management', 'AI Assistant'])
   );

@@ -23,6 +23,8 @@ describe('useIssues', () => {
     const { result } = renderHook(() => useIssues());
 
     expect(result.current.loading).toBe(true);
+    expect(result.current.isInitialLoad).toBe(true);
+    expect(result.current.isRefreshing).toBe(false);
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -30,6 +32,8 @@ describe('useIssues', () => {
 
     expect(result.current.issues).toHaveLength(1);
     expect(result.current.error).toBeNull();
+    expect(result.current.isInitialLoad).toBe(false);
+    expect(result.current.isRefreshing).toBe(false);
   });
 
   it('handles error', async () => {
@@ -58,11 +62,42 @@ describe('useIssues', () => {
       expect(result.current.loading).toBe(false);
     });
 
+    expect(result.current.isInitialLoad).toBe(false);
+
     await act(async () => {
       await result.current.refresh();
     });
 
     expect(api.refresh).toHaveBeenCalled();
     expect(api.getIssues).toHaveBeenCalledTimes(2);
+  });
+
+  it('sets isRefreshing on subsequent fetches, not isInitialLoad', async () => {
+    vi.mocked(api.getIssues).mockResolvedValue({
+      issues: mockIssues as any,
+      lastRefreshed: '2024-01-01T00:00:00Z',
+    });
+    vi.mocked(api.refresh).mockResolvedValue({ message: 'Refreshed', count: 1 });
+
+    const { result } = renderHook(() => useIssues());
+
+    // Initial load
+    expect(result.current.isInitialLoad).toBe(true);
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    // After initial load, isInitialLoad should be false
+    expect(result.current.isInitialLoad).toBe(false);
+
+    // Trigger refresh
+    await act(async () => {
+      await result.current.refresh();
+    });
+
+    // After refresh, isInitialLoad should still be false
+    expect(result.current.isInitialLoad).toBe(false);
+    expect(result.current.isRefreshing).toBe(false);
   });
 });

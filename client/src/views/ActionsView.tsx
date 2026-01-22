@@ -12,7 +12,21 @@ interface ActionSectionProps {
   onSelectIssue: (item: JiraItem) => void;
 }
 
-function ActionSection({ title, items, onSelectIssue }: ActionSectionProps) {
+interface SectionConfig {
+  key: keyof ActionRequiredResult;
+  title: string;
+}
+
+const SECTIONS: SectionConfig[] = [
+  { key: 'blockers', title: 'Blockers' },
+  { key: 'blocked', title: 'Blocked' },
+  { key: 'stale', title: 'Stale' },
+  { key: 'missingDetails', title: 'Missing Details' },
+  { key: 'unassigned', title: 'Unassigned' },
+  { key: 'unestimated', title: 'Unestimated' },
+];
+
+function ActionSection({ title, items, onSelectIssue }: ActionSectionProps): JSX.Element {
   const isEmpty = items.length === 0;
 
   return (
@@ -29,12 +43,12 @@ function ActionSection({ title, items, onSelectIssue }: ActionSectionProps) {
         <ul className="action-section__list">
           {items.map(({ item, reason }) => (
             <li key={item.key} className="action-item">
-              <span
+              <button
                 className="action-item__key"
                 onClick={() => onSelectIssue(item)}
               >
                 {item.key}
-              </span>
+              </button>
               <span className="action-item__summary">{item.summary}</span>
               <span className="action-item__reason">{reason}</span>
               <a
@@ -43,7 +57,7 @@ function ActionSection({ title, items, onSelectIssue }: ActionSectionProps) {
                 rel="noopener noreferrer"
                 className="action-item__link"
               >
-                Fix in Jira →
+                Fix in Jira
               </a>
             </li>
           ))}
@@ -53,39 +67,17 @@ function ActionSection({ title, items, onSelectIssue }: ActionSectionProps) {
   );
 }
 
-export function ActionsView({ actions, onSelectIssue }: ActionsViewProps) {
+export function ActionsView({ actions, onSelectIssue }: ActionsViewProps): JSX.Element {
   return (
     <div className="actions-view">
-      <ActionSection
-        title="Blockers"
-        items={actions.blockers}
-        onSelectIssue={onSelectIssue}
-      />
-      <ActionSection
-        title="Blocked"
-        items={actions.blocked}
-        onSelectIssue={onSelectIssue}
-      />
-      <ActionSection
-        title="Stale"
-        items={actions.stale}
-        onSelectIssue={onSelectIssue}
-      />
-      <ActionSection
-        title="Missing Details"
-        items={actions.missingDetails}
-        onSelectIssue={onSelectIssue}
-      />
-      <ActionSection
-        title="Unassigned"
-        items={actions.unassigned}
-        onSelectIssue={onSelectIssue}
-      />
-      <ActionSection
-        title="Unestimated"
-        items={actions.unestimated}
-        onSelectIssue={onSelectIssue}
-      />
+      {SECTIONS.map(({ key, title }) => (
+        <ActionSection
+          key={key}
+          title={title}
+          items={actions[key]}
+          onSelectIssue={onSelectIssue}
+        />
+      ))}
     </div>
   );
 }

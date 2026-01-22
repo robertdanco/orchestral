@@ -3,7 +3,7 @@
   align-items: flex-start;
   gap: 12px;
   padding: 16px;
-  background: #f4f5f7;
+  background: var(--color-bg-tertiary);
   border-radius: 8px;
   margin-bottom: 12px;
 }
@@ -11,8 +11,8 @@
 .chat-progress__spinner {
   width: 20px;
   height: 20px;
-  border: 2px solid #dfe1e6;
-  border-top-color: #0052cc;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   flex-shrink: 0;
@@ -30,7 +30,7 @@
 
 .chat-progress__phase {
   font-size: 14px;
-  color: #172b4d;
+  color: var(--color-text-primary);
   font-weight: 500;
 }
 
@@ -44,12 +44,12 @@
 .chat-progress__source {
   font-size: 12px;
   padding: 4px 8px;
-  background: white;
+  background: var(--color-white);
   border-radius: 4px;
-  color: #5e6c84;
+  color: var(--color-text-muted);
 }
 
 .chat-progress__source--completed {
-  color: #006644;
-  background: #e3fcef;
+  color: var(--color-done-text);
+  background: var(--color-done-bg);
 }

@@ -1,12 +1,23 @@
-export type IssueType = 'initiative' | 'epic' | 'story' | 'task' | 'bug';
-export type StatusCategory = 'todo' | 'inprogress' | 'done';
+// Re-export shared types
+export type {
+  IssueType,
+  StatusCategory,
+  JiraItem,
+  HierarchicalJiraItem,
+  ActionRequiredItem,
+  ActionRequiredResult,
+  IssuesResponse,
+} from '@orchestral/shared';
+export { isValidJiraItem } from '@orchestral/shared';
 
-export interface JiraItem {
+// Server-only types
+
+export interface JiraItemDetail {
   key: string;
   summary: string;
-  type: IssueType;
+  type: import('@orchestral/shared').IssueType;
   status: string;
-  statusCategory: StatusCategory;
+  statusCategory: import('@orchestral/shared').StatusCategory;
   assignee: string | null;
   parentKey: string | null;
   estimate: number | null;
@@ -16,9 +27,6 @@ export interface JiraItem {
   blocked: boolean;
   blockedReason: string | null;
   url: string;
-}
-
-export interface JiraItemDetail extends JiraItem {
   description: string | null;
   acceptanceCriteria: string | null;
   comments: Comment[];
@@ -35,21 +43,6 @@ export interface Comment {
 export interface LinkedIssue {
   key: string;
   summary: string;
-  type: IssueType;
+  type: import('@orchestral/shared').IssueType;
   linkType: string;
-}
-
-export interface HierarchicalJiraItem extends JiraItem {
-  children: HierarchicalJiraItem[];
-}
-
-const REQUIRED_FIELDS = [
-  'key', 'summary', 'type', 'status', 'statusCategory',
-  'created', 'updated', 'labels', 'blocked', 'url'
-];
-
-export function isValidJiraItem(obj: unknown): obj is JiraItem {
-  if (typeof obj !== 'object' || obj === null) return false;
-  const record = obj as Record<string, unknown>;
-  return REQUIRED_FIELDS.every(field => field in record);
 }

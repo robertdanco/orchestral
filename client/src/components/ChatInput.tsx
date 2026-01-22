@@ -11,7 +11,7 @@ export function ChatInput({
   onSend,
   disabled = false,
   placeholder = 'Ask about your Jira issues...',
-}: ChatInputProps) {
+}: ChatInputProps): JSX.Element {
   const [value, setValue] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 

@@ -13,7 +13,7 @@ interface TreeNodeProps {
   onSelectIssue: (item: JiraItem) => void;
 }
 
-function TreeNode({ item, level, onSelectIssue }: TreeNodeProps) {
+function TreeNode({ item, level, onSelectIssue }: TreeNodeProps): JSX.Element {
   const [expanded, setExpanded] = useState(level < 2);
   const hasChildren = item.children.length > 0;
 
@@ -39,19 +39,19 @@ function TreeNode({ item, level, onSelectIssue }: TreeNodeProps) {
           {item.type.charAt(0).toUpperCase()}
         </span>
 
-        <span
+        <button
           className="tree-node__key"
           onClick={() => onSelectIssue(item)}
         >
           {item.key}
-        </span>
+        </button>
 
-        <span
+        <button
           className="tree-node__summary"
           onClick={() => setExpanded(!expanded)}
         >
           {item.summary}
-        </span>
+        </button>
 
         <span className={`tree-node__status tree-node__status--${item.statusCategory}`}>
           {item.status}
@@ -84,7 +84,7 @@ function TreeNode({ item, level, onSelectIssue }: TreeNodeProps) {
   );
 }
 
-export function TreeView({ hierarchy, onSelectIssue }: TreeViewProps) {
+export function TreeView({ hierarchy, onSelectIssue }: TreeViewProps): JSX.Element {
   if (hierarchy.length === 0) {
     return <div className="tree-empty">No items</div>;
   }

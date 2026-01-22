@@ -2,12 +2,7 @@ import { Router } from 'express';
 import { Cache } from './cache.js';
 import { JiraClient } from './jira/client.js';
 import { buildHierarchy } from './hierarchy.js';
-import { detectActionRequired, ActionConfig } from './actions.js';
-
-const DEFAULT_ACTION_CONFIG: ActionConfig = {
-  staleDays: 5,
-  requireEstimates: true,
-};
+import { detectActionRequired, DEFAULT_ACTION_CONFIG } from './actions.js';
 
 export function createRouter(cache: Cache, client: JiraClient): Router {
   const router = Router();

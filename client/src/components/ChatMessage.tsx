@@ -6,7 +6,7 @@ interface ChatMessageProps {
   onCitationClick?: (citation: Citation) => void;
 }
 
-export function ChatMessage({ message, onCitationClick }: ChatMessageProps) {
+export function ChatMessage({ message, onCitationClick }: ChatMessageProps): JSX.Element {
   const isUser = message.role === 'user';
 
   // Parse content to find citation markers like [1], [2] and make them clickable

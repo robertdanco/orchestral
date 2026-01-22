@@ -1,11 +1,15 @@
 .issue-card {
-  background: white;
+  background: var(--color-white);
   border-radius: 4px;
   padding: 12px;
   cursor: pointer;
-  border-left: 3px solid #ddd;
+  border: none;
+  border-left: 3px solid var(--color-border);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.2s;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
 }
 
 .issue-card:hover {
@@ -13,15 +17,15 @@
 }
 
 .issue-card--todo {
-  border-left-color: #6b778c;
+  border-left-color: var(--color-status-default-text);
 }
 
 .issue-card--inprogress {
-  border-left-color: #0052cc;
+  border-left-color: var(--color-primary);
 }
 
 .issue-card--done {
-  border-left-color: #36b37e;
+  border-left-color: var(--color-done);
 }
 
 .issue-card__header {
@@ -36,41 +40,41 @@
   text-transform: uppercase;
   padding: 2px 6px;
   border-radius: 3px;
-  background: #dfe1e6;
-  color: #42526e;
+  background: var(--color-status-default-bg);
+  color: var(--color-text-secondary);
 }
 
 .issue-card__type--initiative {
-  background: #6554c0;
-  color: white;
+  background: var(--color-epic);
+  color: var(--color-white);
 }
 
 .issue-card__type--epic {
-  background: #6554c0;
-  color: white;
+  background: var(--color-epic);
+  color: var(--color-white);
 }
 
 .issue-card__type--story {
-  background: #36b37e;
-  color: white;
+  background: var(--color-story);
+  color: var(--color-white);
 }
 
 .issue-card__type--bug {
-  background: #ff5630;
-  color: white;
+  background: var(--color-bug);
+  color: var(--color-white);
 }
 
 .issue-card__key {
   font-size: 12px;
-  color: #5e6c84;
+  color: var(--color-text-muted);
 }
 
 .issue-card__blocked {
   font-size: 10px;
   padding: 2px 6px;
   border-radius: 3px;
-  background: #ff5630;
-  color: white;
+  background: var(--color-error-light);
+  color: var(--color-white);
   margin-left: auto;
 }
 
@@ -85,11 +89,11 @@
   justify-content: space-between;
   align-items: center;
   font-size: 12px;
-  color: #5e6c84;
+  color: var(--color-text-muted);
 }
 
 .issue-card__estimate {
-  background: #dfe1e6;
+  background: var(--color-status-default-bg);
   padding: 2px 6px;
   border-radius: 3px;
 }

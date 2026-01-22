@@ -14,7 +14,7 @@ const COLUMNS: { key: StatusCategory; label: string }[] = [
   { key: 'done', label: 'Done' },
 ];
 
-export function KanbanView({ issues, onSelectIssue }: KanbanViewProps) {
+export function KanbanView({ issues, onSelectIssue }: KanbanViewProps): JSX.Element {
   const columns = useMemo(() => {
     const grouped: Record<StatusCategory, JiraItem[]> = {
       todo: [],

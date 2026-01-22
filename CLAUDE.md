@@ -75,8 +75,14 @@ The chat feature provides an AI assistant with pluggable knowledge sources:
 | `/api/chat/session/:id` | GET | Get session history |
 | `/api/chat/session/:id` | DELETE | Delete a session |
 
-### Key Types
-The `JiraItem` type is defined in both `server/src/types.ts` and `client/src/types.ts` with: `key`, `summary`, `type`, `status`, `statusCategory`, `assignee`, `parentKey`, `estimate`, `blocked`, `blockedReason`, `url`, etc.
+### Shared Types (`shared/src/`)
+The `@orchestral/shared` package contains types used by both server and client:
+- `JiraItem`, `HierarchicalJiraItem` - Core issue types
+- `ActionRequiredItem`, `ActionRequiredResult` - Action detection types
+- `IssuesResponse`, `HierarchyResponse` - API response types
+- `isValidJiraItem()` - Runtime type validation
+
+Both `server/src/types.ts` and `client/src/types.ts` re-export from shared.
 
 ## Environment Variables
 
@@ -138,6 +144,7 @@ FAIL src/cache.test.ts > cache > should return cached data
 
 ### Monorepo Navigation Pattern
 ```bash
+# This is an npm workspaces monorepo (shared, server, client)
 # Always specify which workspace when running commands:
 cd server && npx tsc --noEmit    # Server TypeScript check
 cd client && npx tsc --noEmit    # Client TypeScript check
@@ -145,12 +152,16 @@ cd client && npx tsc --noEmit    # Client TypeScript check
 # Or from root:
 npm run test:server              # Server tests only
 npm run test:client              # Client tests only
+
+# When modifying shared types, rebuild shared first:
+cd shared && npm run build
 ```
 
 ### Client Structure
-- Global styles in `client/src/index.css` (no separate App.css)
-- Components have co-located CSS files (e.g., `Header.css`, `Sidebar.css`)
+- Global styles in `client/src/index.css` with CSS custom properties (`:root` variables for colors)
+- Components have co-located CSS files (e.g., `Header.css`, `Sidebar.css`) that use these variables
 - Sidebar navigation uses data-driven `sections` array in `Sidebar.tsx` for extensibility
+- Data hooks expose granular loading states: `isInitialLoad` (first fetch) and `isRefreshing` (subsequent fetches)
 
 ## Adding Knowledge Sources
 
@@ -191,4 +202,5 @@ chatService.registerSource(new MySource());
 - Unused function parameters should use underscore prefix (e.g., `_options`) to avoid TS6133 errors
 - TreeView nodes at level < 2 start expanded; tests should use `getAllByText` for toggle buttons since multiple exist
 - Server routes only mount when all Jira env vars are set; `/api/health` always works for testing
-- `App.test.tsx` has a pre-existing type error (mock missing `blockers` property) - tests pass at runtime but `tsc --noEmit` fails
+- jsdom doesn't implement `scrollIntoView` - tests that use it need `Element.prototype.scrollIntoView = vi.fn()` mock
+- When testing async state transitions (like `isRefreshing`), avoid synchronous assertions immediately after calling async functions; use `waitFor` to check final state

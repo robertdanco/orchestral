@@ -13,6 +13,7 @@ describe('App', () => {
     });
     vi.mocked(api.getHierarchy).mockResolvedValue([]);
     vi.mocked(api.getActions).mockResolvedValue({
+      blockers: [],
       blocked: [],
       stale: [],
       missingDetails: [],

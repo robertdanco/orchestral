@@ -14,7 +14,7 @@ function formatDate(dateString: string): string {
   });
 }
 
-export function DetailPanel({ item, onClose }: DetailPanelProps) {
+export function DetailPanel({ item, onClose }: DetailPanelProps): JSX.Element | null {
   if (!item) return null;
 
   return (

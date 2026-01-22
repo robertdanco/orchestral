@@ -1,7 +1,7 @@
 // Jira Issues knowledge source - queries cached Jira issues
 
 import { Cache } from '../../cache.js';
-import { detectActionRequired, type ActionConfig } from '../../actions.js';
+import { detectActionRequired, DEFAULT_ACTION_CONFIG } from '../../actions.js';
 import type { JiraItem } from '../../types.js';
 import type {
   KnowledgeSource,
@@ -11,11 +11,6 @@ import type {
   Citation,
   JiraIssueCitation,
 } from '../types.js';
-
-const DEFAULT_ACTION_CONFIG: ActionConfig = {
-  staleDays: 5,
-  requireEstimates: true,
-};
 
 export class JiraIssuesSource implements KnowledgeSource {
   private cache: Cache;

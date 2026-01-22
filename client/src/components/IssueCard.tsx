@@ -6,9 +6,9 @@ interface IssueCardProps {
   onClick: (item: JiraItem) => void;
 }
 
-export function IssueCard({ item, onClick }: IssueCardProps) {
+export function IssueCard({ item, onClick }: IssueCardProps): JSX.Element {
   return (
-    <div
+    <button
       className={`issue-card issue-card--${item.statusCategory}`}
       onClick={() => onClick(item)}
     >
@@ -28,6 +28,6 @@ export function IssueCard({ item, onClick }: IssueCardProps) {
           <span className="issue-card__estimate">{item.estimate}pt</span>
         )}
       </div>
-    </div>
+    </button>
   );
 }
