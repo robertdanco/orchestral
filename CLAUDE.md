@@ -43,10 +43,22 @@ Jira Cloud API → JiraClient → Cache → Routes → React Hooks → Views
 - `routes.ts` - API endpoints mounted at `/api`
 
 ### Client (`client/src/`)
-- `hooks/` - Data fetching hooks (`useIssues`, `useHierarchy`, `useActions`) with loading/error states
-- `views/` - Main views: `KanbanView` (status columns), `TreeView` (hierarchy), `ActionsView` (attention needed)
-- `components/` - `IssueCard`, `DetailPanel` (side panel), `Header`
+- `hooks/` - Data fetching hooks (`useIssues`, `useHierarchy`, `useActions`, `useChat`) with loading/error states
+- `views/` - Main views: `KanbanView` (status columns), `TreeView` (hierarchy), `ActionsView` (attention needed), `ChatView` (AI assistant)
+- `components/` - `IssueCard`, `DetailPanel` (side panel), `Header`, `ChatMessage`, `ChatInput`, `ChatProgress`
 - `api.ts` - Fetch wrapper for server endpoints
+
+### Chat System (`server/src/chat/`)
+The chat feature provides an AI assistant with pluggable knowledge sources:
+- `types.ts` - Core interfaces (KnowledgeSource, Citation, QueryPlan, etc.)
+- `llm/client.ts` - Anthropic API client abstraction
+- `llm/prompts.ts` - System prompts for planning and synthesis
+- `planner.ts` - LLM-based query planning to select relevant sources
+- `executor.ts` - Executes query plans (parallel/sequential source queries)
+- `synthesizer.ts` - Generates natural language responses with citations
+- `service.ts` - Orchestrates the full chat flow
+- `routes.ts` - Chat API endpoints
+- `sources/jira-issues.ts` - Reference implementation querying the Jira cache
 
 ### API Endpoints
 | Endpoint | Method | Purpose |
@@ -57,6 +69,11 @@ Jira Cloud API → JiraClient → Cache → Routes → React Hooks → Views
 | `/api/actions` | GET | Issues needing PM attention |
 | `/api/refresh` | POST | Clear cache and refetch from Jira |
 | `/api/health` | GET | Health check |
+| `/api/chat` | POST | Send message, get response |
+| `/api/chat/stream` | POST | Send message, stream response via SSE |
+| `/api/chat/sources` | GET | List available knowledge sources |
+| `/api/chat/session/:id` | GET | Get session history |
+| `/api/chat/session/:id` | DELETE | Delete a session |
 
 ### Key Types
 The `JiraItem` type is defined in both `server/src/types.ts` and `client/src/types.ts` with: `key`, `summary`, `type`, `status`, `statusCategory`, `assignee`, `parentKey`, `estimate`, `blocked`, `blockedReason`, `url`, etc.
@@ -69,6 +86,9 @@ JIRA_URL=https://yourcompany.atlassian.net
 JIRA_EMAIL=you@yourcompany.com
 JIRA_API_TOKEN=your-api-token
 JIRA_PROJECT_KEYS=PROJ,TEAM
+
+# Optional: Enable AI chat feature
+ANTHROPIC_API_KEY=sk-ant-...
 ```
 
 ## Testing
@@ -127,8 +147,47 @@ npm run test:server              # Server tests only
 npm run test:client              # Client tests only
 ```
 
+### Client Structure
+- Global styles in `client/src/index.css` (no separate App.css)
+- Components have co-located CSS files (e.g., `Header.css`, `Sidebar.css`)
+- Sidebar navigation uses data-driven `sections` array in `Sidebar.tsx` for extensibility
+
+## Adding Knowledge Sources
+
+To add a new knowledge source to the chat system:
+
+1. Create a class implementing `KnowledgeSource` in `server/src/chat/sources/`:
+```typescript
+import type { KnowledgeSource, KnowledgeSourceMetadata, QueryContext, KnowledgeSourceResult } from '../types.js';
+
+export class MySource implements KnowledgeSource {
+  metadata: KnowledgeSourceMetadata = {
+    id: 'my-source',
+    name: 'My Source',
+    description: 'What this source contains',
+    capabilities: ['What queries it can answer'],
+    exampleQueries: ['Example question?'],
+    priority: 2,
+  };
+
+  async query(context: QueryContext): Promise<KnowledgeSourceResult> {
+    // Query your data source and return results with citations
+  }
+
+  async isAvailable(): Promise<boolean> {
+    return true;
+  }
+}
+```
+
+2. Register the source in `server/src/index.ts`:
+```typescript
+chatService.registerSource(new MySource());
+```
+
 ## Gotchas
 
 - Client build runs `tsc` first - unused imports (even in test files) cause build failure
 - TreeView nodes at level < 2 start expanded; tests should use `getAllByText` for toggle buttons since multiple exist
 - Server routes only mount when all Jira env vars are set; `/api/health` always works for testing
+- `App.test.tsx` has a pre-existing type error (mock missing `blockers` property) - tests pass at runtime but `tsc --noEmit` fails

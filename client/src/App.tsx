@@ -1,10 +1,12 @@
 import { useState, useCallback } from 'react';
-import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Header } from './components/Header';
+import { Sidebar } from './components/Sidebar';
 import { DetailPanel } from './components/DetailPanel';
 import { KanbanView } from './views/KanbanView';
 import { TreeView } from './views/TreeView';
 import { ActionsView } from './views/ActionsView';
+import { ChatView } from './views/ChatView';
 import { useIssues } from './hooks/useIssues';
 import { useHierarchy } from './hooks/useHierarchy';
 import { useActions } from './hooks/useActions';
@@ -65,43 +67,39 @@ function AppContent() {
         loading={loading}
         onRefresh={handleRefresh}
       />
-      <nav className="nav">
-        <NavLink to="/" className={({ isActive }) => isActive ? 'active' : ''} end>
-          Kanban
-        </NavLink>
-        <NavLink to="/tree" className={({ isActive }) => isActive ? 'active' : ''}>
-          Tree
-        </NavLink>
-        <NavLink to="/actions" className={({ isActive }) => isActive ? 'active' : ''}>
-          Action Required
-        </NavLink>
-      </nav>
-      <main className={`main ${selectedItem ? 'main--with-panel' : ''}`}>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <KanbanView issues={issues} onSelectIssue={handleSelectIssue} />
-            }
-          />
-          <Route
-            path="/tree"
-            element={
-              <TreeView hierarchy={hierarchy} onSelectIssue={handleSelectIssue} />
-            }
-          />
-          <Route
-            path="/actions"
-            element={
-              actions ? (
-                <ActionsView actions={actions} onSelectIssue={handleSelectIssue} />
-              ) : (
-                <div>Loading...</div>
-              )
-            }
-          />
-        </Routes>
-      </main>
+      <div className="app__body">
+        <Sidebar />
+        <main className={`main ${selectedItem ? 'main--with-panel' : ''}`}>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <KanbanView issues={issues} onSelectIssue={handleSelectIssue} />
+              }
+            />
+            <Route
+              path="/tree"
+              element={
+                <TreeView hierarchy={hierarchy} onSelectIssue={handleSelectIssue} />
+              }
+            />
+            <Route
+              path="/actions"
+              element={
+                actions ? (
+                  <ActionsView actions={actions} onSelectIssue={handleSelectIssue} />
+                ) : (
+                  <div>Loading...</div>
+                )
+              }
+            />
+            <Route
+              path="/chat"
+              element={<ChatView onSelectIssue={handleSelectIssue} />}
+            />
+          </Routes>
+        </main>
+      </div>
       <DetailPanel item={selectedItem} onClose={handleClosePanel} />
     </div>
   );
