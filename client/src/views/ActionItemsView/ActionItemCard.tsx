@@ -1,16 +1,13 @@
-import type { ActionItem, JiraActionItem, ConfluenceActionItem } from '../../types';
+import type { ActionItem, ManualActionItem } from '../../types';
+import { MANUAL_CATEGORY_LABELS, isJiraItem, isConfluenceItem, isManualItem } from './utils';
 
 interface ActionItemCardProps {
   item: ActionItem;
   onSelectJiraIssue?: (issueKey: string) => void;
-}
-
-function isJiraItem(item: ActionItem): item is JiraActionItem {
-  return item.source === 'jira';
-}
-
-function isConfluenceItem(item: ActionItem): item is ConfluenceActionItem {
-  return item.source === 'confluence';
+  onEditManualItem?: (item: ManualActionItem) => void;
+  onDeleteManualItem?: (id: string) => void;
+  onCompleteManualItem?: (id: string) => void;
+  onUncompleteManualItem?: (id: string) => void;
 }
 
 function getPriorityClass(priority: ActionItem['priority']): string {
@@ -26,8 +23,75 @@ function getPriorityClass(priority: ActionItem['priority']): string {
   }
 }
 
-export function ActionItemCard({ item, onSelectJiraIssue }: ActionItemCardProps): JSX.Element {
+export function ActionItemCard({
+  item,
+  onSelectJiraIssue,
+  onEditManualItem,
+  onDeleteManualItem,
+  onCompleteManualItem,
+  onUncompleteManualItem,
+}: ActionItemCardProps): JSX.Element {
   const priorityClass = getPriorityClass(item.priority);
+
+  if (isManualItem(item)) {
+    const isCompleted = !!item.completedAt;
+    const completedClass = isCompleted ? 'action-item-card--completed' : '';
+    const categoryLabel = MANUAL_CATEGORY_LABELS[item.category];
+
+    return (
+      <div className={`action-item-card action-item-card--manual ${priorityClass} ${completedClass}`}>
+        <div className="action-item-card__header">
+          <span className="action-item-card__category-badge">{categoryLabel}</span>
+          <span className="action-item-card__source">Manual</span>
+        </div>
+        <div className="action-item-card__title">{item.title}</div>
+        {item.description && (
+          <div className="action-item-card__description">{item.description}</div>
+        )}
+        {item.dueDate && (
+          <div className="action-item-card__due-date">
+            Due: {new Date(item.dueDate).toLocaleDateString()}
+          </div>
+        )}
+        <div className="action-item-card__footer">
+          <span className="action-item-card__reason">{item.reason}</span>
+          <div className="action-item-card__actions">
+            {isCompleted ? (
+              <button
+                className="action-item-card__action-btn action-item-card__action-btn--uncomplete"
+                onClick={() => onUncompleteManualItem?.(item.id)}
+                title="Mark as incomplete"
+              >
+                Undo
+              </button>
+            ) : (
+              <button
+                className="action-item-card__action-btn action-item-card__action-btn--complete"
+                onClick={() => onCompleteManualItem?.(item.id)}
+                title="Mark as complete"
+              >
+                Complete
+              </button>
+            )}
+            <button
+              className="action-item-card__action-btn action-item-card__action-btn--edit"
+              onClick={() => onEditManualItem?.(item)}
+              title="Edit item"
+            >
+              Edit
+            </button>
+            <button
+              className="action-item-card__action-btn action-item-card__action-btn--delete"
+              onClick={() => onDeleteManualItem?.(item.id)}
+              title="Delete item"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isJiraItem(item)) {
     return (

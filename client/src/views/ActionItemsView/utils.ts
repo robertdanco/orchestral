@@ -1,4 +1,4 @@
-import type { JiraActionItem, ConfluenceActionItem } from '../../types';
+import type { JiraActionItem, ConfluenceActionItem, ManualActionItem, ActionItem } from '../../types';
 
 export const JIRA_CATEGORY_LABELS: Record<JiraActionItem['category'], string> = {
   blocker: 'Blockers',
@@ -14,6 +14,25 @@ export const CONFLUENCE_CATEGORY_LABELS: Record<ConfluenceActionItem['category']
   'reply-needed': 'Replies Needed',
   'unresolved-comment': 'Unresolved Comments',
 };
+
+export const MANUAL_CATEGORY_LABELS: Record<ManualActionItem['category'], string> = {
+  task: 'Tasks',
+  followup: 'Follow-ups',
+  decision: 'Decisions',
+  reminder: 'Reminders',
+};
+
+export function isJiraItem(item: ActionItem): item is JiraActionItem {
+  return item.source === 'jira';
+}
+
+export function isConfluenceItem(item: ActionItem): item is ConfluenceActionItem {
+  return item.source === 'confluence';
+}
+
+export function isManualItem(item: ActionItem): item is ManualActionItem {
+  return item.source === 'manual';
+}
 
 export function groupByCategory<T extends { category: string }>(
   items: T[]
