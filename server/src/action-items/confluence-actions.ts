@@ -1,6 +1,7 @@
 import type { ConfluenceActionItem, ConfluenceComment } from '@orchestral/shared';
 import type { ConfluenceClient } from '../confluence/client.js';
 import type { ConfluenceCache } from '../confluence/cache.js';
+import { sortActionItems } from './utils.js';
 
 type ConfluenceActionCategory = ConfluenceActionItem['category'];
 
@@ -118,13 +119,7 @@ export async function detectConfluenceActions(
       }
     }
 
-    // Sort by priority (high first) then by created date (newest first)
-    actionItems.sort((a, b) => {
-      const priorityOrder = { high: 0, medium: 1, low: 2 };
-      const priorityDiff = priorityOrder[a.priority] - priorityOrder[b.priority];
-      if (priorityDiff !== 0) return priorityDiff;
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    });
+    sortActionItems(actionItems);
 
   } catch (error) {
     // Log error but don't throw - partial results are better than none

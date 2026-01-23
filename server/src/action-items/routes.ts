@@ -9,8 +9,7 @@ import { detectConfluenceActions } from './confluence-actions.js';
 export function createActionItemsRouter(
   jiraCache: Cache,
   confluenceClient: ConfluenceClient,
-  confluenceCache: ConfluenceCache,
-  jiraEmail: string
+  confluenceCache: ConfluenceCache
 ): Router {
   const router = Router();
 
@@ -69,28 +68,6 @@ export function createActionItemsRouter(
     response.totalCount = response.jira.count + response.confluence.count;
 
     res.json(response);
-  });
-
-  // POST /api/action-items/refresh - Refresh all action item sources
-  router.post('/refresh', async (_req: Request, res: Response) => {
-    try {
-      // Refresh both caches in parallel
-      await Promise.all([
-        // Jira cache refresh is handled by the main refresh endpoint
-        // Just re-detect actions with current data
-        Promise.resolve(),
-        // Confluence doesn't need explicit refresh here - it fetches fresh data on each request
-        Promise.resolve(),
-      ]);
-
-      res.json({ message: 'Action items refreshed successfully' });
-    } catch (error) {
-      console.error('Error refreshing action items:', error);
-      res.status(500).json({
-        error: 'Failed to refresh action items',
-        message: error instanceof Error ? error.message : 'Unknown error',
-      });
-    }
   });
 
   return router;

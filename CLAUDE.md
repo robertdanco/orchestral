@@ -84,7 +84,6 @@ The chat feature provides an AI assistant with pluggable knowledge sources:
 | `/api/confluence/search` | GET | Search pages (`?q=query`) |
 | `/api/confluence/refresh` | POST | Clear cache and refetch |
 | `/api/action-items` | GET | Aggregated action items from all sources |
-| `/api/action-items/refresh` | POST | Refresh all action item sources |
 
 ### Shared Types (`shared/src/`)
 The `@orchestral/shared` package contains types used by both server and client:

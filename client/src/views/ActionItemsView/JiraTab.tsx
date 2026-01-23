@@ -1,20 +1,12 @@
 import type { JiraActionItem } from '../../types';
 import { ActionItemCard } from './ActionItemCard';
+import { JIRA_CATEGORY_LABELS as CATEGORY_LABELS, groupByCategory } from './utils';
 
 interface JiraTabProps {
   items: JiraActionItem[];
   error?: string;
   onSelectIssue: (issueKey: string) => void;
 }
-
-const CATEGORY_LABELS: Record<JiraActionItem['category'], string> = {
-  blocker: 'Blockers',
-  blocked: 'Blocked',
-  stale: 'Stale',
-  missingDetails: 'Missing Details',
-  unassigned: 'Unassigned',
-  unestimated: 'Unestimated',
-};
 
 export function JiraTab({ items, error, onSelectIssue }: JiraTabProps): JSX.Element {
   if (error) {
@@ -38,14 +30,7 @@ export function JiraTab({ items, error, onSelectIssue }: JiraTabProps): JSX.Elem
     );
   }
 
-  // Group items by category
-  const groupedItems = items.reduce((acc, item) => {
-    if (!acc[item.category]) {
-      acc[item.category] = [];
-    }
-    acc[item.category].push(item);
-    return acc;
-  }, {} as Record<JiraActionItem['category'], JiraActionItem[]>);
+  const groupedItems = groupByCategory(items);
 
   return (
     <div className="action-items-tab__content">

@@ -60,8 +60,7 @@ if (process.env.JIRA_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN
   app.use('/api/action-items', createActionItemsRouter(
     cache,
     confluenceClient,
-    confluenceCache,
-    process.env.JIRA_EMAIL
+    confluenceCache
   ));
   console.log('Action Items integration initialized');
 

@@ -1,16 +1,11 @@
 import type { ConfluenceActionItem } from '../../types';
 import { ActionItemCard } from './ActionItemCard';
+import { CONFLUENCE_CATEGORY_LABELS as CATEGORY_LABELS, groupByCategory } from './utils';
 
 interface ConfluenceTabProps {
   items: ConfluenceActionItem[];
   error?: string;
 }
-
-const CATEGORY_LABELS: Record<ConfluenceActionItem['category'], string> = {
-  'mention': 'Mentions',
-  'reply-needed': 'Replies Needed',
-  'unresolved-comment': 'Unresolved Comments',
-};
 
 export function ConfluenceTab({ items, error }: ConfluenceTabProps): JSX.Element {
   if (error) {
@@ -34,14 +29,7 @@ export function ConfluenceTab({ items, error }: ConfluenceTabProps): JSX.Element
     );
   }
 
-  // Group items by category
-  const groupedItems = items.reduce((acc, item) => {
-    if (!acc[item.category]) {
-      acc[item.category] = [];
-    }
-    acc[item.category].push(item);
-    return acc;
-  }, {} as Record<ConfluenceActionItem['category'], ConfluenceActionItem[]>);
+  const groupedItems = groupByCategory(items);
 
   return (
     <div className="action-items-tab__content">

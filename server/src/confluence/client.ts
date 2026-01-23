@@ -53,6 +53,35 @@ interface ConfluencePagesResponse {
   };
 }
 
+interface ConfluenceCommentResponse {
+  results: Array<{
+    id: string;
+    pageId: string;
+    body?: { storage?: { value: string } };
+    version?: { authorId: string; createdAt: string };
+    resolutionStatus?: { status: string };
+    parentCommentId?: string;
+  }>;
+  _links?: { next?: string };
+}
+
+interface ConfluenceSearchCommentResponse {
+  results: Array<{
+    id: string;
+    body?: { storage?: { value: string } };
+    version?: { by: { accountId: string; displayName: string; email?: string }; when: string };
+    space?: { key: string };
+    ancestors?: Array<{ id: string; title: string }>;
+    extensions?: { resolution?: { status: string } };
+  }>;
+  _links?: { next?: string };
+}
+
+interface ConfluenceSearchPagesResponse {
+  results: Array<{ id: string }>;
+  _links?: { next?: string };
+}
+
 export class ConfluenceClient {
   private baseUrl: string;
   private email: string;
@@ -84,11 +113,14 @@ export class ConfluenceClient {
     return this.baseUrl;
   }
 
-  async fetchSpaces(): Promise<ConfluenceSpace[]> {
-    const spaces: ConfluenceSpace[] = [];
-    let url = `${this.baseUrl}/wiki/api/v2/spaces?limit=100`;
+  private async fetchPaginated<TResponse extends { _links?: { next?: string } }, TResult>(
+    initialUrl: string,
+    processPage: (data: TResponse) => TResult[],
+    handle404AsEmpty: boolean = false
+  ): Promise<TResult[]> {
+    const results: TResult[] = [];
+    let url: string | null = initialUrl;
 
-    // Paginate through all spaces
     while (url) {
       const response = await fetch(url, {
         headers: {
@@ -98,60 +130,37 @@ export class ConfluenceClient {
       });
 
       if (!response.ok) {
+        if (handle404AsEmpty && response.status === 404) return results;
         throw new Error(`Confluence API error: ${response.status}`);
       }
 
-      const data = await response.json() as ConfluenceSpacesResponse;
-
-      for (const space of data.results) {
-        // Filter by space keys if configured
-        if (this.spaceKeys.length > 0 && !this.spaceKeys.includes(space.key)) {
-          continue;
-        }
-        spaces.push(this.mapSpace(space));
-      }
-
-      // Handle pagination
-      url = data._links?.next ? `${this.baseUrl}${data._links.next}` : '';
+      const data = await response.json() as TResponse;
+      results.push(...processPage(data));
+      url = data._links?.next ? `${this.baseUrl}${data._links.next}` : null;
     }
 
-    return spaces;
+    return results;
+  }
+
+  async fetchSpaces(): Promise<ConfluenceSpace[]> {
+    return this.fetchPaginated<ConfluenceSpacesResponse, ConfluenceSpace>(
+      `${this.baseUrl}/wiki/api/v2/spaces?limit=100`,
+      (data) => data.results
+        .filter(space => this.spaceKeys.length === 0 || this.spaceKeys.includes(space.key))
+        .map(space => this.mapSpace(space))
+    );
   }
 
   async fetchPages(spaceId?: string): Promise<ConfluencePage[]> {
-    const pages: ConfluencePage[] = [];
-    let baseUrl = `${this.baseUrl}/wiki/api/v2/pages?limit=100&body-format=storage`;
-
+    let url = `${this.baseUrl}/wiki/api/v2/pages?limit=100&body-format=storage`;
     if (spaceId) {
-      baseUrl += `&space-id=${spaceId}`;
+      url += `&space-id=${spaceId}`;
     }
 
-    let url = baseUrl;
-
-    // Paginate through all pages
-    while (url) {
-      const response = await fetch(url, {
-        headers: {
-          'Authorization': this.getAuthHeader(),
-          'Accept': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Confluence API error: ${response.status}`);
-      }
-
-      const data = await response.json() as ConfluencePagesResponse;
-
-      for (const page of data.results) {
-        pages.push(this.mapPage(page));
-      }
-
-      // Handle pagination
-      url = data._links?.next ? `${this.baseUrl}${data._links.next}` : '';
-    }
-
-    return pages;
+    return this.fetchPaginated<ConfluencePagesResponse, ConfluencePage>(
+      url,
+      (data) => data.results.map(page => this.mapPage(page))
+    );
   }
 
   async fetchPage(pageId: string): Promise<ConfluencePage> {
@@ -311,110 +320,50 @@ export class ConfluenceClient {
   }
 
   private async fetchCommentsOfType(pageId: string, type: 'footer' | 'inline'): Promise<ConfluenceComment[]> {
-    const comments: ConfluenceComment[] = [];
     const endpoint = type === 'footer' ? 'footer-comments' : 'inline-comments';
-    let url: string | null = `${this.baseUrl}/wiki/api/v2/pages/${pageId}/${endpoint}?body-format=storage`;
+    const url = `${this.baseUrl}/wiki/api/v2/pages/${pageId}/${endpoint}?body-format=storage`;
 
-    while (url) {
-      const response = await fetch(url, {
-        headers: {
-          'Authorization': this.getAuthHeader(),
-          'Accept': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        // Return empty array on error rather than throwing
-        if (response.status === 404) return comments;
-        throw new Error(`Confluence API error: ${response.status}`);
-      }
-
-      interface CommentResponse {
-        results: Array<{
-          id: string;
-          pageId: string;
-          body?: { storage?: { value: string } };
-          version?: { authorId: string; createdAt: string };
-          resolutionStatus?: { status: string };
-          parentCommentId?: string;
-        }>;
-        _links?: { next?: string };
-      }
-
-      const data = await response.json() as CommentResponse;
-
-      for (const comment of data.results) {
-        // Extract @mentions from the body (format: <ac:link><ri:user ri:account-id="..."/></ac:link>)
+    return this.fetchPaginated<ConfluenceCommentResponse, ConfluenceComment>(
+      url,
+      (data) => data.results.map(comment => {
         const body = comment.body?.storage?.value || '';
         const mentionMatches = body.match(/ri:account-id="([^"]+)"/g) || [];
         const mentions = mentionMatches.map(m => m.replace('ri:account-id="', '').replace('"', ''));
 
-        comments.push({
+        return {
           id: comment.id,
           pageId: comment.pageId || pageId,
-          pageTitle: '', // Will be populated by caller
-          spaceKey: '', // Will be populated by caller
+          pageTitle: '',
+          spaceKey: '',
           body: this.extractPlainText(body) || '',
           author: {
             accountId: comment.version?.authorId || '',
-            displayName: '', // Will need separate lookup
+            displayName: '',
             email: '',
           },
           createdAt: comment.version?.createdAt || new Date().toISOString(),
           resolved: comment.resolutionStatus?.status === 'resolved',
           parentCommentId: comment.parentCommentId || null,
           mentions,
-        });
-      }
-
-      url = data._links?.next ? `${this.baseUrl}${data._links.next}` : null;
-    }
-
-    return comments;
+        };
+      }),
+      true // handle404AsEmpty
+    );
   }
 
   async fetchRecentComments(sinceDays: number = 7): Promise<ConfluenceComment[]> {
-    // Use CQL to search for recent comments
     const cql = `type=comment AND created >= now("-${sinceDays}d")`;
-    let url: string | null = `${this.baseUrl}/wiki/rest/api/content/search?cql=${encodeURIComponent(cql)}&limit=100&expand=body.storage,version,space,ancestors`;
+    const url = `${this.baseUrl}/wiki/rest/api/content/search?cql=${encodeURIComponent(cql)}&limit=100&expand=body.storage,version,space,ancestors`;
 
-    const comments: ConfluenceComment[] = [];
-
-    while (url) {
-      const response = await fetch(url, {
-        headers: {
-          'Authorization': this.getAuthHeader(),
-          'Accept': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Confluence API error: ${response.status}`);
-      }
-
-      interface SearchCommentResponse {
-        results: Array<{
-          id: string;
-          body?: { storage?: { value: string } };
-          version?: { by: { accountId: string; displayName: string; email?: string }; when: string };
-          space?: { key: string };
-          ancestors?: Array<{ id: string; title: string }>;
-          extensions?: { resolution?: { status: string } };
-        }>;
-        _links?: { next?: string };
-      }
-
-      const data = await response.json() as SearchCommentResponse;
-
-      for (const comment of data.results) {
+    return this.fetchPaginated<ConfluenceSearchCommentResponse, ConfluenceComment>(
+      url,
+      (data) => data.results.map(comment => {
         const body = comment.body?.storage?.value || '';
         const mentionMatches = body.match(/ri:account-id="([^"]+)"/g) || [];
         const mentions = mentionMatches.map(m => m.replace('ri:account-id="', '').replace('"', ''));
-
-        // Get page info from ancestors (first ancestor is the page)
         const page = comment.ancestors?.[0];
 
-        comments.push({
+        return {
           id: comment.id,
           pageId: page?.id || '',
           pageTitle: page?.title || '',
@@ -427,50 +376,20 @@ export class ConfluenceClient {
           },
           createdAt: comment.version?.when || new Date().toISOString(),
           resolved: comment.extensions?.resolution?.status === 'resolved',
-          parentCommentId: null, // Not available in search results
+          parentCommentId: null,
           mentions,
-        });
-      }
-
-      url = data._links?.next ? `${this.baseUrl}${data._links.next}` : null;
-    }
-
-    return comments;
+        };
+      })
+    );
   }
 
   async fetchPagesAuthoredByUser(userId: string): Promise<string[]> {
-    // Use CQL to find pages created by the user
     const cql = `creator = "${userId}" AND type = page`;
-    let url: string | null = `${this.baseUrl}/wiki/rest/api/content/search?cql=${encodeURIComponent(cql)}&limit=100`;
+    const url = `${this.baseUrl}/wiki/rest/api/content/search?cql=${encodeURIComponent(cql)}&limit=100`;
 
-    const pageIds: string[] = [];
-
-    while (url) {
-      const response = await fetch(url, {
-        headers: {
-          'Authorization': this.getAuthHeader(),
-          'Accept': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Confluence API error: ${response.status}`);
-      }
-
-      interface PagesResponse {
-        results: Array<{ id: string }>;
-        _links?: { next?: string };
-      }
-
-      const data = await response.json() as PagesResponse;
-
-      for (const page of data.results) {
-        pageIds.push(page.id);
-      }
-
-      url = data._links?.next ? `${this.baseUrl}${data._links.next}` : null;
-    }
-
-    return pageIds;
+    return this.fetchPaginated<ConfluenceSearchPagesResponse, string>(
+      url,
+      (data) => data.results.map(page => page.id)
+    );
   }
 }

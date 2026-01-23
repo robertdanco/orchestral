@@ -1,5 +1,6 @@
 import type { JiraItem, JiraActionItem, ActionRequiredResult } from '@orchestral/shared';
 import { detectActionRequired, DEFAULT_ACTION_CONFIG, type ActionConfig } from '../actions.js';
+import { sortActionItems } from './utils.js';
 
 type JiraActionCategory = JiraActionItem['category'];
 
@@ -59,13 +60,7 @@ export function detectJiraActions(
     }
   }
 
-  // Sort by priority (high first) then by created date (newest first)
-  actionItems.sort((a, b) => {
-    const priorityOrder = { high: 0, medium: 1, low: 2 };
-    const priorityDiff = priorityOrder[a.priority] - priorityOrder[b.priority];
-    if (priorityDiff !== 0) return priorityDiff;
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  });
+  sortActionItems(actionItems);
 
   return actionItems;
 }
