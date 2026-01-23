@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { api } from '../api';
-import type { ActionItemsResponse } from '../types';
+import type { ActionItemsResponse, CreateManualActionItemInput, UpdateManualActionItemInput, ManualActionItem } from '../types';
 
 interface UseActionItemsResult {
   actionItems: ActionItemsResponse | null;
@@ -10,6 +10,12 @@ interface UseActionItemsResult {
   error: string | null;
   totalCount: number;
   refresh: () => Promise<void>;
+  // Manual item mutations
+  createManualItem: (input: CreateManualActionItemInput) => Promise<ManualActionItem>;
+  updateManualItem: (id: string, input: UpdateManualActionItemInput) => Promise<ManualActionItem>;
+  deleteManualItem: (id: string) => Promise<void>;
+  completeManualItem: (id: string) => Promise<ManualActionItem>;
+  uncompleteManualItem: (id: string) => Promise<ManualActionItem>;
 }
 
 export function useActionItems(): UseActionItemsResult {
@@ -51,6 +57,36 @@ export function useActionItems(): UseActionItemsResult {
     }
   }, [fetchActionItems]);
 
+  // Manual item mutations
+  const createManualItem = useCallback(async (input: CreateManualActionItemInput): Promise<ManualActionItem> => {
+    const item = await api.createManualActionItem(input);
+    await fetchActionItems();
+    return item;
+  }, [fetchActionItems]);
+
+  const updateManualItem = useCallback(async (id: string, input: UpdateManualActionItemInput): Promise<ManualActionItem> => {
+    const item = await api.updateManualActionItem(id, input);
+    await fetchActionItems();
+    return item;
+  }, [fetchActionItems]);
+
+  const deleteManualItem = useCallback(async (id: string): Promise<void> => {
+    await api.deleteManualActionItem(id);
+    await fetchActionItems();
+  }, [fetchActionItems]);
+
+  const completeManualItem = useCallback(async (id: string): Promise<ManualActionItem> => {
+    const item = await api.completeManualActionItem(id);
+    await fetchActionItems();
+    return item;
+  }, [fetchActionItems]);
+
+  const uncompleteManualItem = useCallback(async (id: string): Promise<ManualActionItem> => {
+    const item = await api.uncompleteManualActionItem(id);
+    await fetchActionItems();
+    return item;
+  }, [fetchActionItems]);
+
   useEffect(() => {
     fetchActionItems();
   }, [fetchActionItems]);
@@ -66,5 +102,10 @@ export function useActionItems(): UseActionItemsResult {
     error,
     totalCount,
     refresh,
+    createManualItem,
+    updateManualItem,
+    deleteManualItem,
+    completeManualItem,
+    uncompleteManualItem,
   };
 }

@@ -21,8 +21,12 @@ export type {
   ActionItemBase,
   JiraActionItem,
   ConfluenceActionItem,
+  ManualActionCategory,
+  ManualActionItem,
   ActionItem,
   ActionItemsResponse,
+  CreateManualActionItemInput,
+  UpdateManualActionItemInput,
   ConfluenceUser,
   ConfluenceComment,
 } from '@orchestral/shared';

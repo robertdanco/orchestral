@@ -1,6 +1,6 @@
 // Action Items shared types - aggregates actionable items across integrations
 
-export type ActionItemSource = 'jira' | 'confluence';
+export type ActionItemSource = 'jira' | 'confluence' | 'manual';
 
 export interface ActionItemBase {
   id: string;
@@ -11,6 +11,9 @@ export interface ActionItemBase {
   createdAt: string;
   priority: 'high' | 'medium' | 'low';
 }
+
+// Manual Action Item types
+export type ManualActionCategory = 'task' | 'followup' | 'decision' | 'reminder';
 
 export interface JiraActionItem extends ActionItemBase {
   source: 'jira';
@@ -28,13 +31,41 @@ export interface ConfluenceActionItem extends ActionItemBase {
   authorName: string;
 }
 
-export type ActionItem = JiraActionItem | ConfluenceActionItem;
+export interface ManualActionItem extends ActionItemBase {
+  source: 'manual';
+  category: ManualActionCategory;
+  description?: string;
+  dueDate?: string;
+  completedAt?: string | null;
+}
+
+export type ActionItem = JiraActionItem | ConfluenceActionItem | ManualActionItem;
 
 export interface ActionItemsResponse {
   jira: { items: JiraActionItem[]; count: number; error?: string };
   confluence: { items: ConfluenceActionItem[]; count: number; error?: string };
+  manual: { items: ManualActionItem[]; count: number; error?: string };
   totalCount: number;
   lastRefreshed: string;
+}
+
+// Input types for manual item CRUD operations
+export interface CreateManualActionItemInput {
+  title: string;
+  reason: string;
+  category: ManualActionCategory;
+  priority: 'high' | 'medium' | 'low';
+  description?: string;
+  dueDate?: string;
+}
+
+export interface UpdateManualActionItemInput {
+  title?: string;
+  reason?: string;
+  category?: ManualActionCategory;
+  priority?: 'high' | 'medium' | 'low';
+  description?: string;
+  dueDate?: string;
 }
 
 export interface ConfluenceUser {

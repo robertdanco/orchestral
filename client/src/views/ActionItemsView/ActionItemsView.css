@@ -10,6 +10,26 @@
   margin-bottom: 16px;
 }
 
+.action-items-view__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-items-view__add-btn {
+  padding: 8px 16px;
+  background: var(--color-done-text, #16a34a);
+  color: var(--color-white);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.action-items-view__add-btn:hover {
+  background: var(--color-done-dark, #15803d);
+}
+
 .action-items-view__title {
   font-size: 24px;
   font-weight: 600;
@@ -296,4 +316,286 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Manual Tab */
+.manual-tab__header {
+  margin-bottom: 16px;
+}
+
+.manual-tab__add-btn {
+  padding: 8px 16px;
+  background: var(--color-done-text, #16a34a);
+  color: var(--color-white);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.manual-tab__add-btn:hover {
+  background: var(--color-done-dark, #15803d);
+}
+
+/* Manual Item Card Styles */
+.action-item-card--manual {
+  border-left-color: var(--color-primary);
+}
+
+.action-item-card--completed {
+  opacity: 0.6;
+  background: var(--color-bg-secondary, #f9fafb);
+}
+
+.action-item-card--completed .action-item-card__title {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+.action-item-card__category-badge {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  background: var(--color-primary-light, #e0f2fe);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+.action-item-card__description {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.action-item-card__due-date {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+}
+
+.action-item-card__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-item-card__action-btn {
+  padding: 4px 8px;
+  font-size: 12px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-item-card__action-btn--complete {
+  background: var(--color-done-bg, #dcfce7);
+  color: var(--color-done-text, #16a34a);
+}
+
+.action-item-card__action-btn--complete:hover {
+  background: var(--color-done-text, #16a34a);
+  color: var(--color-white);
+}
+
+.action-item-card__action-btn--uncomplete {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-muted);
+}
+
+.action-item-card__action-btn--uncomplete:hover {
+  background: var(--color-text-muted);
+  color: var(--color-white);
+}
+
+.action-item-card__action-btn--edit {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.action-item-card__action-btn--edit:hover {
+  background: var(--color-primary-light, #e0f2fe);
+  color: var(--color-primary);
+}
+
+.action-item-card__action-btn--delete {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-muted);
+}
+
+.action-item-card__action-btn--delete:hover {
+  background: var(--color-error-bg, #fef2f2);
+  color: var(--color-error, #dc2626);
+}
+
+/* Completed Section */
+.action-items-tab__section--completed {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
+}
+
+.action-items-tab__section-count--completed {
+  background: var(--color-status-default-bg);
+  color: var(--color-text-muted);
+}
+
+/* Manual Item Form Modal */
+.manual-item-form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.manual-item-form {
+  background: var(--color-white);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.manual-item-form__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.manual-item-form__title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.manual-item-form__close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.manual-item-form__close:hover {
+  color: var(--color-text-primary);
+}
+
+.manual-item-form form {
+  padding: 20px;
+}
+
+.manual-item-form__error {
+  background: var(--color-error-bg, #fef2f2);
+  color: var(--color-error, #dc2626);
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.manual-item-form__field {
+  margin-bottom: 16px;
+}
+
+.manual-item-form__row {
+  display: flex;
+  gap: 16px;
+}
+
+.manual-item-form__field--half {
+  flex: 1;
+}
+
+.manual-item-form__label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+
+.manual-item-form__input,
+.manual-item-form__select,
+.manual-item-form__textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-white);
+  color: var(--color-text-primary);
+  box-sizing: border-box;
+}
+
+.manual-item-form__input:focus,
+.manual-item-form__select:focus,
+.manual-item-form__textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light, rgba(0, 102, 204, 0.1));
+}
+
+.manual-item-form__textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.manual-item-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.manual-item-form__btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.manual-item-form__btn--cancel {
+  background: none;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.manual-item-form__btn--cancel:hover {
+  background: var(--color-bg-tertiary);
+}
+
+.manual-item-form__btn--cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.manual-item-form__btn--submit {
+  background: var(--color-primary);
+  border: none;
+  color: var(--color-white);
+}
+
+.manual-item-form__btn--submit:hover {
+  background: var(--color-primary-dark, #0052cc);
+}
+
+.manual-item-form__btn--submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

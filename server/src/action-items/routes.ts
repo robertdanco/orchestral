@@ -1,29 +1,36 @@
 import { Router, type Request, type Response } from 'express';
-import type { ActionItemsResponse, JiraActionItem, ConfluenceActionItem } from '@orchestral/shared';
+import type { ActionItemsResponse, JiraActionItem, ConfluenceActionItem, ManualActionItem } from '@orchestral/shared';
 import type { Cache } from '../cache.js';
 import type { ConfluenceClient } from '../confluence/client.js';
 import type { ConfluenceCache } from '../confluence/cache.js';
+import type { ManualItemsCache } from './manual-cache.js';
 import { detectJiraActions } from './jira-actions.js';
 import { detectConfluenceActions } from './confluence-actions.js';
+import { createManualItemsRouter } from './manual-routes.js';
 
 export function createActionItemsRouter(
   jiraCache: Cache,
   confluenceClient: ConfluenceClient,
-  confluenceCache: ConfluenceCache
+  confluenceCache: ConfluenceCache,
+  manualCache: ManualItemsCache
 ): Router {
   const router = Router();
+
+  // Mount manual items subrouter
+  router.use('/manual', createManualItemsRouter(manualCache));
 
   // GET /api/action-items - Get aggregated action items from all sources
   router.get('/', async (_req: Request, res: Response) => {
     const response: ActionItemsResponse = {
       jira: { items: [], count: 0 },
       confluence: { items: [], count: 0 },
+      manual: { items: [], count: 0 },
       totalCount: 0,
       lastRefreshed: new Date().toISOString(),
     };
 
-    // Run Jira and Confluence detection in parallel
-    const [jiraResult, confluenceResult] = await Promise.allSettled([
+    // Run Jira, Confluence, and Manual detection in parallel
+    const [jiraResult, confluenceResult, manualResult] = await Promise.allSettled([
       (async (): Promise<JiraActionItem[]> => {
         const issues = jiraCache.getIssues();
         if (issues.length === 0) {
@@ -47,6 +54,9 @@ export function createActionItemsRouter(
           throw error;
         }
       })(),
+      (async (): Promise<ManualActionItem[]> => {
+        return manualCache.getAll();
+      })(),
     ]);
 
     // Process Jira result
@@ -65,7 +75,15 @@ export function createActionItemsRouter(
       response.confluence.error = confluenceResult.reason?.message || 'Failed to fetch Confluence actions';
     }
 
-    response.totalCount = response.jira.count + response.confluence.count;
+    // Process Manual result
+    if (manualResult.status === 'fulfilled') {
+      response.manual.items = manualResult.value;
+      response.manual.count = manualResult.value.length;
+    } else {
+      response.manual.error = manualResult.reason?.message || 'Failed to fetch manual items';
+    }
+
+    response.totalCount = response.jira.count + response.confluence.count + response.manual.count;
 
     res.json(response);
   });

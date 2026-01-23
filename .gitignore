@@ -3,3 +3,6 @@ dist/
 .env
 *.log
 .DS_Store
+
+# Data files (keep directory structure but ignore persisted data)
+data/*.json

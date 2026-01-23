@@ -9,6 +9,9 @@ import type {
   ConfluencePage,
   ConfluenceSearchResult,
   ActionItemsResponse,
+  ManualActionItem,
+  CreateManualActionItemInput,
+  UpdateManualActionItemInput,
 } from './types';
 
 export class ApiError extends Error {
@@ -99,5 +102,34 @@ export const api = {
 
   async refreshActionItems(): Promise<{ message: string }> {
     return fetchJson('/api/action-items/refresh', { method: 'POST' });
+  },
+
+  // Manual Action Items API
+  async createManualActionItem(input: CreateManualActionItemInput): Promise<ManualActionItem> {
+    return fetchJson('/api/action-items/manual', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    });
+  },
+
+  async updateManualActionItem(id: string, input: UpdateManualActionItemInput): Promise<ManualActionItem> {
+    return fetchJson(`/api/action-items/manual/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    });
+  },
+
+  async deleteManualActionItem(id: string): Promise<void> {
+    await fetch(`/api/action-items/manual/${id}`, { method: 'DELETE' });
+  },
+
+  async completeManualActionItem(id: string): Promise<ManualActionItem> {
+    return fetchJson(`/api/action-items/manual/${id}/complete`, { method: 'POST' });
+  },
+
+  async uncompleteManualActionItem(id: string): Promise<ManualActionItem> {
+    return fetchJson(`/api/action-items/manual/${id}/incomplete`, { method: 'POST' });
   },
 };

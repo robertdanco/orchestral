@@ -51,6 +51,11 @@ function AppContent() {
     loading: actionItemsLoading,
     totalCount: actionItemsTotalCount,
     refresh: refreshActionItems,
+    createManualItem,
+    updateManualItem,
+    deleteManualItem,
+    completeManualItem,
+    uncompleteManualItem,
   } = useActionItems();
 
   const loading = issuesLoading || hierarchyLoading || actionsLoading || confluenceLoading || actionItemsLoading;
@@ -136,6 +141,11 @@ function AppContent() {
                   onRefresh={refreshActionItems}
                   onSelectIssue={handleSelectIssue}
                   getIssue={getIssueByKey}
+                  onCreateManualItem={createManualItem}
+                  onUpdateManualItem={updateManualItem}
+                  onDeleteManualItem={deleteManualItem}
+                  onCompleteManualItem={completeManualItem}
+                  onUncompleteManualItem={uncompleteManualItem}
                 />
               }
             />
