@@ -1,5 +1,17 @@
 // Shared types for Orchestral
 
+// Re-export Action Items types
+export type {
+  ActionItemSource,
+  ActionItemBase,
+  JiraActionItem,
+  ConfluenceActionItem,
+  ActionItem,
+  ActionItemsResponse,
+  ConfluenceUser,
+  ConfluenceComment,
+} from './action-items.js';
+
 // Re-export Confluence types
 export type {
   ConfluenceSpace,

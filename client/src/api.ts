@@ -8,6 +8,7 @@ import type {
   ConfluenceSpacesResponse,
   ConfluencePage,
   ConfluenceSearchResult,
+  ActionItemsResponse,
 } from './types';
 
 export class ApiError extends Error {
@@ -89,5 +90,14 @@ export const api = {
 
   async refreshConfluence(): Promise<{ message: string; spacesCount: number; pagesCount: number }> {
     return fetchJson('/api/confluence/refresh', { method: 'POST' });
+  },
+
+  // Action Items API
+  async getActionItems(): Promise<ActionItemsResponse> {
+    return fetchJson('/api/action-items');
+  },
+
+  async refreshActionItems(): Promise<{ message: string }> {
+    return fetchJson('/api/action-items/refresh', { method: 'POST' });
   },
 };

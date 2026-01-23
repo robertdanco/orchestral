@@ -14,6 +14,7 @@ import { ConfluenceClient } from './confluence/client.js';
 import { ConfluenceCache } from './confluence/cache.js';
 import { createConfluenceRouter } from './confluence-routes.js';
 import { ConfluencePagesSource } from './chat/sources/confluence-pages.js';
+import { createActionItemsRouter } from './action-items/routes.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -54,6 +55,15 @@ if (process.env.JIRA_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN
   // Mount Confluence routes
   app.use('/api/confluence', createConfluenceRouter(confluenceCache, confluenceClient));
   console.log('Confluence integration initialized');
+
+  // Mount Action Items routes
+  app.use('/api/action-items', createActionItemsRouter(
+    cache,
+    confluenceClient,
+    confluenceCache,
+    process.env.JIRA_EMAIL
+  ));
+  console.log('Action Items integration initialized');
 
   // Initialize chat service if Anthropic API key is available
   if (process.env.ANTHROPIC_API_KEY) {

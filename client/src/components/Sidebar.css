@@ -38,6 +38,18 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--color-text-muted);
+  flex: 1;
+}
+
+.sidebar__section-badge {
+  background: var(--color-error-light);
+  color: var(--color-white);
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 500;
+  min-width: 18px;
+  text-align: center;
 }
 
 .sidebar__section-content {
@@ -52,11 +64,28 @@
 }
 
 .sidebar__item {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 10px 16px 10px 32px;
   color: var(--color-text-primary);
   text-decoration: none;
   font-size: 14px;
+}
+
+.sidebar__item-badge {
+  background: var(--color-error-light);
+  color: var(--color-white);
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 500;
+  min-width: 18px;
+  text-align: center;
+}
+
+.sidebar__item--active .sidebar__item-badge {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .sidebar__item:hover {

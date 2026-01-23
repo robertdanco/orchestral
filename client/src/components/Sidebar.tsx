@@ -5,39 +5,55 @@ import './Sidebar.css';
 interface NavItem {
   label: string;
   route: string;
+  badge?: number;
 }
 
 interface Section {
   title: string;
   items: NavItem[];
+  badge?: number;
 }
 
-const sections: Section[] = [
-  {
-    title: 'Task Management',
-    items: [
-      { label: 'Kanban', route: '/' },
-      { label: 'Tree', route: '/tree' },
-      { label: 'Action Required', route: '/actions' },
-    ],
-  },
-  {
-    title: 'Documentation',
-    items: [
-      { label: 'Confluence', route: '/confluence' },
-    ],
-  },
-  {
-    title: 'AI Assistant',
-    items: [
-      { label: 'Chat', route: '/chat' },
-    ],
-  },
-];
+interface SidebarProps {
+  actionItemsCount?: number;
+}
 
-export function Sidebar(): JSX.Element {
+function getSections(actionItemsCount: number): Section[] {
+  return [
+    {
+      title: 'Action Items',
+      items: [
+        { label: 'All Actions', route: '/action-items', badge: actionItemsCount },
+      ],
+      badge: actionItemsCount,
+    },
+    {
+      title: 'Task Management',
+      items: [
+        { label: 'Kanban', route: '/' },
+        { label: 'Tree', route: '/tree' },
+        { label: 'Action Required', route: '/actions' },
+      ],
+    },
+    {
+      title: 'Documentation',
+      items: [
+        { label: 'Confluence', route: '/confluence' },
+      ],
+    },
+    {
+      title: 'AI Assistant',
+      items: [
+        { label: 'Chat', route: '/chat' },
+      ],
+    },
+  ];
+}
+
+export function Sidebar({ actionItemsCount = 0 }: SidebarProps): JSX.Element {
+  const sections = getSections(actionItemsCount);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(['Task Management', 'Documentation', 'AI Assistant'])
+    new Set(['Action Items', 'Task Management', 'Documentation', 'AI Assistant'])
   );
 
   const toggleSection = (title: string) => {
@@ -67,6 +83,9 @@ export function Sidebar(): JSX.Element {
                 {isExpanded ? '▼' : '▶'}
               </span>
               <span className="sidebar__section-title">{section.title}</span>
+              {section.badge !== undefined && section.badge > 0 && (
+                <span className="sidebar__section-badge">{section.badge}</span>
+              )}
             </button>
             <div
               className={`sidebar__section-content ${
@@ -81,7 +100,10 @@ export function Sidebar(): JSX.Element {
                     `sidebar__item ${isActive ? 'sidebar__item--active' : ''}`
                   }
                 >
-                  {item.label}
+                  <span>{item.label}</span>
+                  {item.badge !== undefined && item.badge > 0 && (
+                    <span className="sidebar__item-badge">{item.badge}</span>
+                  )}
                 </NavLink>
               ))}
             </div>

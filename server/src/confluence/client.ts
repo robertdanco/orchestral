@@ -1,4 +1,4 @@
-import type { ConfluenceSpace, ConfluencePage } from '@orchestral/shared';
+import type { ConfluenceSpace, ConfluencePage, ConfluenceUser, ConfluenceComment } from '@orchestral/shared';
 
 export interface ConfluenceClientConfig {
   baseUrl: string;
@@ -266,5 +266,211 @@ export class ConfluenceClient {
       .trim();
 
     return text.slice(0, 500) + (text.length > 500 ? '...' : '');
+  }
+
+  async getCurrentUser(): Promise<ConfluenceUser> {
+    const url = `${this.baseUrl}/wiki/rest/api/user/current`;
+
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Confluence API error: ${response.status}`);
+    }
+
+    interface UserResponse {
+      accountId: string;
+      displayName: string;
+      email?: string;
+    }
+
+    const data = await response.json() as UserResponse;
+
+    return {
+      accountId: data.accountId,
+      displayName: data.displayName,
+      email: data.email || this.email, // Fallback to configured email
+    };
+  }
+
+  async fetchPageComments(pageId: string): Promise<ConfluenceComment[]> {
+    const comments: ConfluenceComment[] = [];
+
+    // Fetch both footer comments and inline comments
+    const [footerComments, inlineComments] = await Promise.all([
+      this.fetchCommentsOfType(pageId, 'footer'),
+      this.fetchCommentsOfType(pageId, 'inline'),
+    ]);
+
+    comments.push(...footerComments, ...inlineComments);
+    return comments;
+  }
+
+  private async fetchCommentsOfType(pageId: string, type: 'footer' | 'inline'): Promise<ConfluenceComment[]> {
+    const comments: ConfluenceComment[] = [];
+    const endpoint = type === 'footer' ? 'footer-comments' : 'inline-comments';
+    let url: string | null = `${this.baseUrl}/wiki/api/v2/pages/${pageId}/${endpoint}?body-format=storage`;
+
+    while (url) {
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': this.getAuthHeader(),
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        // Return empty array on error rather than throwing
+        if (response.status === 404) return comments;
+        throw new Error(`Confluence API error: ${response.status}`);
+      }
+
+      interface CommentResponse {
+        results: Array<{
+          id: string;
+          pageId: string;
+          body?: { storage?: { value: string } };
+          version?: { authorId: string; createdAt: string };
+          resolutionStatus?: { status: string };
+          parentCommentId?: string;
+        }>;
+        _links?: { next?: string };
+      }
+
+      const data = await response.json() as CommentResponse;
+
+      for (const comment of data.results) {
+        // Extract @mentions from the body (format: <ac:link><ri:user ri:account-id="..."/></ac:link>)
+        const body = comment.body?.storage?.value || '';
+        const mentionMatches = body.match(/ri:account-id="([^"]+)"/g) || [];
+        const mentions = mentionMatches.map(m => m.replace('ri:account-id="', '').replace('"', ''));
+
+        comments.push({
+          id: comment.id,
+          pageId: comment.pageId || pageId,
+          pageTitle: '', // Will be populated by caller
+          spaceKey: '', // Will be populated by caller
+          body: this.extractPlainText(body) || '',
+          author: {
+            accountId: comment.version?.authorId || '',
+            displayName: '', // Will need separate lookup
+            email: '',
+          },
+          createdAt: comment.version?.createdAt || new Date().toISOString(),
+          resolved: comment.resolutionStatus?.status === 'resolved',
+          parentCommentId: comment.parentCommentId || null,
+          mentions,
+        });
+      }
+
+      url = data._links?.next ? `${this.baseUrl}${data._links.next}` : null;
+    }
+
+    return comments;
+  }
+
+  async fetchRecentComments(sinceDays: number = 7): Promise<ConfluenceComment[]> {
+    // Use CQL to search for recent comments
+    const cql = `type=comment AND created >= now("-${sinceDays}d")`;
+    let url: string | null = `${this.baseUrl}/wiki/rest/api/content/search?cql=${encodeURIComponent(cql)}&limit=100&expand=body.storage,version,space,ancestors`;
+
+    const comments: ConfluenceComment[] = [];
+
+    while (url) {
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': this.getAuthHeader(),
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Confluence API error: ${response.status}`);
+      }
+
+      interface SearchCommentResponse {
+        results: Array<{
+          id: string;
+          body?: { storage?: { value: string } };
+          version?: { by: { accountId: string; displayName: string; email?: string }; when: string };
+          space?: { key: string };
+          ancestors?: Array<{ id: string; title: string }>;
+          extensions?: { resolution?: { status: string } };
+        }>;
+        _links?: { next?: string };
+      }
+
+      const data = await response.json() as SearchCommentResponse;
+
+      for (const comment of data.results) {
+        const body = comment.body?.storage?.value || '';
+        const mentionMatches = body.match(/ri:account-id="([^"]+)"/g) || [];
+        const mentions = mentionMatches.map(m => m.replace('ri:account-id="', '').replace('"', ''));
+
+        // Get page info from ancestors (first ancestor is the page)
+        const page = comment.ancestors?.[0];
+
+        comments.push({
+          id: comment.id,
+          pageId: page?.id || '',
+          pageTitle: page?.title || '',
+          spaceKey: comment.space?.key || '',
+          body: this.extractPlainText(body) || '',
+          author: {
+            accountId: comment.version?.by?.accountId || '',
+            displayName: comment.version?.by?.displayName || '',
+            email: comment.version?.by?.email || '',
+          },
+          createdAt: comment.version?.when || new Date().toISOString(),
+          resolved: comment.extensions?.resolution?.status === 'resolved',
+          parentCommentId: null, // Not available in search results
+          mentions,
+        });
+      }
+
+      url = data._links?.next ? `${this.baseUrl}${data._links.next}` : null;
+    }
+
+    return comments;
+  }
+
+  async fetchPagesAuthoredByUser(userId: string): Promise<string[]> {
+    // Use CQL to find pages created by the user
+    const cql = `creator = "${userId}" AND type = page`;
+    let url: string | null = `${this.baseUrl}/wiki/rest/api/content/search?cql=${encodeURIComponent(cql)}&limit=100`;
+
+    const pageIds: string[] = [];
+
+    while (url) {
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': this.getAuthHeader(),
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Confluence API error: ${response.status}`);
+      }
+
+      interface PagesResponse {
+        results: Array<{ id: string }>;
+        _links?: { next?: string };
+      }
+
+      const data = await response.json() as PagesResponse;
+
+      for (const page of data.results) {
+        pageIds.push(page.id);
+      }
+
+      url = data._links?.next ? `${this.baseUrl}${data._links.next}` : null;
+    }
+
+    return pageIds;
   }
 }

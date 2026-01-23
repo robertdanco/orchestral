@@ -8,10 +8,12 @@ import { TreeView } from './views/TreeView';
 import { ActionsView } from './views/ActionsView';
 import { ChatView } from './views/ChatView';
 import { ConfluenceView } from './views/ConfluenceView';
+import { ActionItemsView } from './views/ActionItemsView';
 import { useIssues } from './hooks/useIssues';
 import { useHierarchy } from './hooks/useHierarchy';
 import { useActions } from './hooks/useActions';
 import { useConfluence } from './hooks/useConfluence';
+import { useActionItems } from './hooks/useActionItems';
 import type { JiraItem } from './types';
 import './index.css';
 
@@ -44,11 +46,18 @@ function AppContent() {
     refresh: refreshConfluence,
   } = useConfluence();
 
-  const loading = issuesLoading || hierarchyLoading || actionsLoading || confluenceLoading;
+  const {
+    actionItems,
+    loading: actionItemsLoading,
+    totalCount: actionItemsTotalCount,
+    refresh: refreshActionItems,
+  } = useActionItems();
+
+  const loading = issuesLoading || hierarchyLoading || actionsLoading || confluenceLoading || actionItemsLoading;
 
   const handleRefresh = useCallback(async () => {
-    await Promise.all([refreshIssues(), refreshHierarchy(), refreshActions(), refreshConfluence()]);
-  }, [refreshIssues, refreshHierarchy, refreshActions, refreshConfluence]);
+    await Promise.all([refreshIssues(), refreshHierarchy(), refreshActions(), refreshConfluence(), refreshActionItems()]);
+  }, [refreshIssues, refreshHierarchy, refreshActions, refreshConfluence, refreshActionItems]);
 
   const handleSelectIssue = useCallback((item: JiraItem) => {
     setSelectedItem(item);
@@ -57,6 +66,10 @@ function AppContent() {
   const handleClosePanel = useCallback(() => {
     setSelectedItem(null);
   }, []);
+
+  const getIssueByKey = useCallback((key: string): JiraItem | undefined => {
+    return issues.find(issue => issue.key === key);
+  }, [issues]);
 
   if (issuesError) {
     return (
@@ -76,7 +89,7 @@ function AppContent() {
         onRefresh={handleRefresh}
       />
       <div className="app__body">
-        <Sidebar />
+        <Sidebar actionItemsCount={actionItemsTotalCount} />
         <main className={`main ${selectedItem ? 'main--with-panel' : ''}`}>
           <Routes>
             <Route
@@ -113,6 +126,18 @@ function AppContent() {
             <Route
               path="/chat"
               element={<ChatView onSelectIssue={handleSelectIssue} />}
+            />
+            <Route
+              path="/action-items"
+              element={
+                <ActionItemsView
+                  actionItems={actionItems}
+                  loading={actionItemsLoading}
+                  onRefresh={refreshActionItems}
+                  onSelectIssue={handleSelectIssue}
+                  getIssue={getIssueByKey}
+                />
+              }
             />
           </Routes>
         </main>
