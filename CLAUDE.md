@@ -43,11 +43,11 @@ Jira Cloud API → JiraClient → Cache → Routes → React Hooks → Views
 - `routes.ts` - API endpoints mounted at `/api`
 - `confluence/` - Confluence Cloud API client, cache, and hierarchy builder (same auth as Jira)
 - `confluence-routes.ts` - Confluence API endpoints mounted at `/api/confluence`
-- `action-items/` - Aggregates actionable items from Jira and Confluence (mentions, replies, unresolved comments)
+- `action-items/` - Aggregates actionable items from Jira and Confluence (utils.ts has shared `sortActionItems()`)
 
 ### Client (`client/src/`)
 - `hooks/` - Data fetching hooks (`useIssues`, `useHierarchy`, `useActions`, `useChat`, `useConfluence`, `useActionItems`) with loading/error states
-- `views/` - Main views: `KanbanView` (status columns), `TreeView` (hierarchy), `ActionsView` (attention needed), `ChatView` (AI assistant), `ConfluenceView` (documentation browser), `ActionItemsView` (aggregated action items)
+- `views/` - Main views: `KanbanView`, `TreeView`, `ActionsView`, `ChatView`, `ConfluenceView`, `ActionItemsView` (has utils.ts with shared grouping/labels)
 - `components/` - `IssueCard`, `DetailPanel` (side panel), `Header`, `ChatMessage`, `ChatInput`, `ChatProgress`
 - `api.ts` - Fetch wrapper for server endpoints
 
