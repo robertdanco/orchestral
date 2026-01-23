@@ -43,10 +43,11 @@ Jira Cloud API → JiraClient → Cache → Routes → React Hooks → Views
 - `routes.ts` - API endpoints mounted at `/api`
 - `confluence/` - Confluence Cloud API client, cache, and hierarchy builder (same auth as Jira)
 - `confluence-routes.ts` - Confluence API endpoints mounted at `/api/confluence`
+- `action-items/` - Aggregates actionable items from Jira and Confluence (mentions, replies, unresolved comments)
 
 ### Client (`client/src/`)
-- `hooks/` - Data fetching hooks (`useIssues`, `useHierarchy`, `useActions`, `useChat`, `useConfluence`) with loading/error states
-- `views/` - Main views: `KanbanView` (status columns), `TreeView` (hierarchy), `ActionsView` (attention needed), `ChatView` (AI assistant), `ConfluenceView` (documentation browser)
+- `hooks/` - Data fetching hooks (`useIssues`, `useHierarchy`, `useActions`, `useChat`, `useConfluence`, `useActionItems`) with loading/error states
+- `views/` - Main views: `KanbanView` (status columns), `TreeView` (hierarchy), `ActionsView` (attention needed), `ChatView` (AI assistant), `ConfluenceView` (documentation browser), `ActionItemsView` (aggregated action items)
 - `components/` - `IssueCard`, `DetailPanel` (side panel), `Header`, `ChatMessage`, `ChatInput`, `ChatProgress`
 - `api.ts` - Fetch wrapper for server endpoints
 
@@ -82,11 +83,15 @@ The chat feature provides an AI assistant with pluggable knowledge sources:
 | `/api/confluence/hierarchy` | GET | Spaces with nested page trees |
 | `/api/confluence/search` | GET | Search pages (`?q=query`) |
 | `/api/confluence/refresh` | POST | Clear cache and refetch |
+| `/api/action-items` | GET | Aggregated action items from all sources |
+| `/api/action-items/refresh` | POST | Refresh all action item sources |
 
 ### Shared Types (`shared/src/`)
 The `@orchestral/shared` package contains types used by both server and client:
 - `JiraItem`, `HierarchicalJiraItem` - Core issue types
 - `ActionRequiredItem`, `ActionRequiredResult` - Action detection types
+- `ActionItem`, `JiraActionItem`, `ConfluenceActionItem` - Unified action item types
+- `ConfluenceUser`, `ConfluenceComment` - Confluence comment types
 - `IssuesResponse`, `HierarchyResponse` - API response types
 - `isValidJiraItem()` - Runtime type validation
 
@@ -217,6 +222,9 @@ chatService.registerSource(new MySource());
 
 ## Gotchas
 
+- When aggregating from multiple sources (Jira + Confluence), use `Promise.allSettled` to handle partial failures gracefully
+- Confluence client supports CQL queries via `/wiki/rest/api/content/search` for comments/pages search
+- Sidebar badges are driven by props from App.tsx; pass counts down to enable notification badges
 - Client build runs `tsc` first - unused imports (even in test files) cause build failure
 - Unused function parameters should use underscore prefix (e.g., `_options`) to avoid TS6133 errors
 - TreeView nodes at level < 2 start expanded; tests should use `getAllByText` for toggle buttons since multiple exist
