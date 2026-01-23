@@ -7,9 +7,11 @@ import { KanbanView } from './views/KanbanView';
 import { TreeView } from './views/TreeView';
 import { ActionsView } from './views/ActionsView';
 import { ChatView } from './views/ChatView';
+import { ConfluenceView } from './views/ConfluenceView';
 import { useIssues } from './hooks/useIssues';
 import { useHierarchy } from './hooks/useHierarchy';
 import { useActions } from './hooks/useActions';
+import { useConfluence } from './hooks/useConfluence';
 import type { JiraItem } from './types';
 import './index.css';
 
@@ -36,11 +38,17 @@ function AppContent() {
     refresh: refreshActions,
   } = useActions();
 
-  const loading = issuesLoading || hierarchyLoading || actionsLoading;
+  const {
+    spaces: confluenceSpaces,
+    loading: confluenceLoading,
+    refresh: refreshConfluence,
+  } = useConfluence();
+
+  const loading = issuesLoading || hierarchyLoading || actionsLoading || confluenceLoading;
 
   const handleRefresh = useCallback(async () => {
-    await Promise.all([refreshIssues(), refreshHierarchy(), refreshActions()]);
-  }, [refreshIssues, refreshHierarchy, refreshActions]);
+    await Promise.all([refreshIssues(), refreshHierarchy(), refreshActions(), refreshConfluence()]);
+  }, [refreshIssues, refreshHierarchy, refreshActions, refreshConfluence]);
 
   const handleSelectIssue = useCallback((item: JiraItem) => {
     setSelectedItem(item);
@@ -91,6 +99,15 @@ function AppContent() {
                 ) : (
                   <div>Loading...</div>
                 )
+              }
+            />
+            <Route
+              path="/confluence"
+              element={
+                <ConfluenceView
+                  spaces={confluenceSpaces}
+                  loading={confluenceLoading}
+                />
               }
             />
             <Route

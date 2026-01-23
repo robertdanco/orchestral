@@ -22,6 +22,12 @@ const sections: Section[] = [
     ],
   },
   {
+    title: 'Documentation',
+    items: [
+      { label: 'Confluence', route: '/confluence' },
+    ],
+  },
+  {
     title: 'AI Assistant',
     items: [
       { label: 'Chat', route: '/chat' },
@@ -31,7 +37,7 @@ const sections: Section[] = [
 
 export function Sidebar(): JSX.Element {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(['Task Management', 'AI Assistant'])
+    new Set(['Task Management', 'Documentation', 'AI Assistant'])
   );
 
   const toggleSection = (title: string) => {

@@ -7,5 +7,14 @@ export type {
   ActionRequiredItem,
   ActionRequiredResult,
   IssuesResponse,
+  // Confluence types
+  ConfluenceSpace,
+  ConfluencePage,
+  HierarchicalConfluencePage,
+  ConfluenceSpaceWithPages,
+  ConfluenceHierarchyResponse,
+  ConfluencePagesResponse,
+  ConfluenceSpacesResponse,
+  ConfluenceSearchResult,
 } from '@orchestral/shared';
 export { isValidJiraItem } from '@orchestral/shared';

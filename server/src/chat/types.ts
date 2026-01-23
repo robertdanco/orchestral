@@ -197,3 +197,16 @@ export interface JiraIssueCitation extends Citation {
     item: JiraItem;
   };
 }
+
+// ============================================================================
+// Confluence-specific Citation Type
+// ============================================================================
+
+export interface ConfluencePageCitation extends Citation {
+  type: 'confluence-page';
+  metadata: {
+    pageId: string;
+    spaceKey: string;
+    title: string;
+  };
+}

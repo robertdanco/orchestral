@@ -1,0 +1,217 @@
+.confluence-view {
+  display: flex;
+  height: 100%;
+  gap: 16px;
+}
+
+.confluence-tree {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.confluence-empty {
+  text-align: center;
+  padding: 48px;
+  color: var(--color-text-muted);
+}
+
+.confluence-loading {
+  text-align: center;
+  padding: 48px;
+  color: var(--color-text-muted);
+}
+
+/* Space Node */
+.confluence-space {
+  margin-bottom: 16px;
+}
+
+.confluence-space__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.confluence-space__header:hover {
+  background: var(--color-bg-tertiary);
+}
+
+.confluence-space__toggle {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  width: 16px;
+}
+
+.confluence-space__icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  color: var(--color-white);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.confluence-space__name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.confluence-space__count {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  background: var(--color-bg-tertiary);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.confluence-space__pages {
+  margin-left: 24px;
+  margin-top: 4px;
+}
+
+/* Page Node */
+.confluence-page {
+  margin-left: 8px;
+}
+
+.confluence-page__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.confluence-page__row:hover {
+  background: var(--color-bg-tertiary);
+}
+
+.confluence-page__row--selected {
+  background: var(--color-primary-light);
+}
+
+.confluence-page__toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 16px;
+  font-size: 10px;
+  color: var(--color-text-muted);
+  padding: 0;
+}
+
+.confluence-page__spacer {
+  width: 16px;
+}
+
+.confluence-page__icon {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.confluence-page__title {
+  flex: 1;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.confluence-page__title:hover {
+  color: var(--color-primary);
+}
+
+.confluence-page__children {
+  margin-top: 2px;
+}
+
+/* Preview Panel */
+.confluence-preview {
+  width: 400px;
+  background: var(--color-white);
+  border-left: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.confluence-preview__header {
+  padding: 16px;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.confluence-preview__title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.confluence-preview__link {
+  font-size: 12px;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.confluence-preview__link:hover {
+  text-decoration: underline;
+}
+
+.confluence-preview__content {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.confluence-preview__meta {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.confluence-preview__meta-item {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.confluence-preview__meta-label {
+  color: var(--color-text-muted);
+  min-width: 80px;
+}
+
+.confluence-preview__meta-value {
+  color: var(--color-text-primary);
+}
+
+.confluence-preview__body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.confluence-preview__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-text-muted);
+}

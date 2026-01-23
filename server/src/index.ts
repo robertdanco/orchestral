@@ -10,6 +10,10 @@ import { createChatRouter } from './chat/routes.js';
 import { ChatService } from './chat/service.js';
 import { createLLMClient } from './chat/llm/client.js';
 import { JiraIssuesSource } from './chat/sources/jira-issues.js';
+import { ConfluenceClient } from './confluence/client.js';
+import { ConfluenceCache } from './confluence/cache.js';
+import { createConfluenceRouter } from './confluence-routes.js';
+import { ConfluencePagesSource } from './chat/sources/confluence-pages.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -38,6 +42,19 @@ if (process.env.JIRA_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN
   // Mount API routes
   app.use('/api', createRouter(cache, jiraClient));
 
+  // Initialize Confluence client and cache (uses same Atlassian credentials)
+  const confluenceCache = new ConfluenceCache();
+  const confluenceClient = new ConfluenceClient({
+    baseUrl: process.env.JIRA_URL,
+    email: process.env.JIRA_EMAIL,
+    apiToken: process.env.JIRA_API_TOKEN,
+    spaceKeys: (process.env.CONFLUENCE_SPACE_KEYS || '').split(',').filter(Boolean),
+  });
+
+  // Mount Confluence routes
+  app.use('/api/confluence', createConfluenceRouter(confluenceCache, confluenceClient));
+  console.log('Confluence integration initialized');
+
   // Initialize chat service if Anthropic API key is available
   if (process.env.ANTHROPIC_API_KEY) {
     const llmClient = createLLMClient();
@@ -46,9 +63,12 @@ if (process.env.JIRA_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN
     // Register Jira issues knowledge source
     chatService.registerSource(new JiraIssuesSource(cache));
 
+    // Register Confluence pages knowledge source
+    chatService.registerSource(new ConfluencePagesSource(confluenceCache, confluenceClient));
+
     // Mount chat routes
     app.use('/api/chat', createChatRouter(chatService));
-    console.log('Chat service initialized with Jira knowledge source');
+    console.log('Chat service initialized with Jira and Confluence knowledge sources');
   } else {
     console.log('ANTHROPIC_API_KEY not set - chat feature disabled');
   }

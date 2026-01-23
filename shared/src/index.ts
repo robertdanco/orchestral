@@ -1,5 +1,17 @@
 // Shared types for Orchestral
 
+// Re-export Confluence types
+export type {
+  ConfluenceSpace,
+  ConfluencePage,
+  HierarchicalConfluencePage,
+  ConfluenceSpaceWithPages,
+  ConfluenceHierarchyResponse,
+  ConfluencePagesResponse,
+  ConfluenceSpacesResponse,
+  ConfluenceSearchResult,
+} from './confluence.js';
+
 export type IssueType = 'initiative' | 'epic' | 'story' | 'task' | 'bug';
 export type StatusCategory = 'todo' | 'inprogress' | 'done';
 
