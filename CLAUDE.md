@@ -41,10 +41,12 @@ Jira Cloud API → JiraClient → Cache → Routes → React Hooks → Views
 - `hierarchy.ts` - Builds parent-child tree from flat issues using `parentKey`
 - `actions.ts` - Detects issues needing attention (blocked, stale, unassigned, unestimated)
 - `routes.ts` - API endpoints mounted at `/api`
+- `confluence/` - Confluence Cloud API client, cache, and hierarchy builder (same auth as Jira)
+- `confluence-routes.ts` - Confluence API endpoints mounted at `/api/confluence`
 
 ### Client (`client/src/`)
-- `hooks/` - Data fetching hooks (`useIssues`, `useHierarchy`, `useActions`, `useChat`) with loading/error states
-- `views/` - Main views: `KanbanView` (status columns), `TreeView` (hierarchy), `ActionsView` (attention needed), `ChatView` (AI assistant)
+- `hooks/` - Data fetching hooks (`useIssues`, `useHierarchy`, `useActions`, `useChat`, `useConfluence`) with loading/error states
+- `views/` - Main views: `KanbanView` (status columns), `TreeView` (hierarchy), `ActionsView` (attention needed), `ChatView` (AI assistant), `ConfluenceView` (documentation browser)
 - `components/` - `IssueCard`, `DetailPanel` (side panel), `Header`, `ChatMessage`, `ChatInput`, `ChatProgress`
 - `api.ts` - Fetch wrapper for server endpoints
 
@@ -74,6 +76,12 @@ The chat feature provides an AI assistant with pluggable knowledge sources:
 | `/api/chat/sources` | GET | List available knowledge sources |
 | `/api/chat/session/:id` | GET | Get session history |
 | `/api/chat/session/:id` | DELETE | Delete a session |
+| `/api/confluence/spaces` | GET | List Confluence spaces |
+| `/api/confluence/pages` | GET | List all pages |
+| `/api/confluence/pages/:id` | GET | Single page with content |
+| `/api/confluence/hierarchy` | GET | Spaces with nested page trees |
+| `/api/confluence/search` | GET | Search pages (`?q=query`) |
+| `/api/confluence/refresh` | POST | Clear cache and refetch |
 
 ### Shared Types (`shared/src/`)
 The `@orchestral/shared` package contains types used by both server and client:
@@ -93,9 +101,20 @@ JIRA_EMAIL=you@yourcompany.com
 JIRA_API_TOKEN=your-api-token
 JIRA_PROJECT_KEYS=PROJ,TEAM
 
+# Optional: Limit Confluence to specific spaces (uses same Atlassian credentials)
+CONFLUENCE_SPACE_KEYS=DOCS,ENG
+
 # Optional: Enable AI chat feature
 ANTHROPIC_API_KEY=sk-ant-...
 ```
+
+## Claude Code Hooks
+
+The project has protective hooks in `.claude/settings.local.json`:
+- **PreToolUse**: Blocks edits to `.env` files (credentials protection) - `.env.example` is allowed
+- **PostToolUse**: Runs `tsc --noEmit` in server/ and client/ after every file edit
+
+If a hook blocks an action, the error message will explain why.
 
 ## Testing
 
