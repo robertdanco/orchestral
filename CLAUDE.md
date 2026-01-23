@@ -43,7 +43,9 @@ Jira Cloud API → JiraClient → Cache → Routes → React Hooks → Views
 - `routes.ts` - API endpoints mounted at `/api`
 - `confluence/` - Confluence Cloud API client, cache, and hierarchy builder (same auth as Jira)
 - `confluence-routes.ts` - Confluence API endpoints mounted at `/api/confluence`
-- `action-items/` - Aggregates actionable items from Jira and Confluence (utils.ts has shared `sortActionItems()`)
+- `action-items/` - Aggregates actionable items from Jira, Confluence, and manual items
+  - `manual-cache.ts` - File-based persistence for manual items (saves to `data/manual-items.json`)
+  - `manual-routes.ts` - CRUD endpoints for manual items
 
 ### Client (`client/src/`)
 - `hooks/` - Data fetching hooks (`useIssues`, `useHierarchy`, `useActions`, `useChat`, `useConfluence`, `useActionItems`) with loading/error states
@@ -84,12 +86,21 @@ The chat feature provides an AI assistant with pluggable knowledge sources:
 | `/api/confluence/search` | GET | Search pages (`?q=query`) |
 | `/api/confluence/refresh` | POST | Clear cache and refetch |
 | `/api/action-items` | GET | Aggregated action items from all sources |
+| `/api/action-items/manual` | GET | List all manual items |
+| `/api/action-items/manual` | POST | Create manual item |
+| `/api/action-items/manual/:id` | GET | Get single manual item |
+| `/api/action-items/manual/:id` | PUT | Update manual item |
+| `/api/action-items/manual/:id` | DELETE | Delete manual item |
+| `/api/action-items/manual/:id/complete` | POST | Mark item complete |
+| `/api/action-items/manual/:id/incomplete` | POST | Mark item incomplete |
 
 ### Shared Types (`shared/src/`)
 The `@orchestral/shared` package contains types used by both server and client:
 - `JiraItem`, `HierarchicalJiraItem` - Core issue types
 - `ActionRequiredItem`, `ActionRequiredResult` - Action detection types
-- `ActionItem`, `JiraActionItem`, `ConfluenceActionItem` - Unified action item types
+- `ActionItem`, `JiraActionItem`, `ConfluenceActionItem`, `ManualActionItem` - Unified action item types
+- `ManualActionCategory` - Categories: task, followup, decision, reminder
+- `CreateManualActionItemInput`, `UpdateManualActionItemInput` - CRUD input types
 - `ConfluenceUser`, `ConfluenceComment` - Confluence comment types
 - `IssuesResponse`, `HierarchyResponse` - API response types
 - `isValidJiraItem()` - Runtime type validation
@@ -219,9 +230,20 @@ export class MySource implements KnowledgeSource {
 chatService.registerSource(new MySource());
 ```
 
+## Adding Action Item Sources
+
+To add a new action item source (like Manual items):
+1. Add types in `shared/src/action-items.ts` (new interface extending `ActionItemBase`, update `ActionItem` union, add section to `ActionItemsResponse`)
+2. Rebuild shared: `cd shared && npm run build`
+3. Create server cache class in `server/src/action-items/` with persistence logic
+4. Create server routes and mount in main routes file
+5. Add section to `Promise.allSettled` in `/api/action-items` response aggregation
+6. Add client API methods, hook mutations, and view components (Tab + Form pattern)
+
 ## Gotchas
 
-- When aggregating from multiple sources (Jira + Confluence), use `Promise.allSettled` to handle partial failures gracefully
+- Manual action items persist to `data/manual-items.json` (file-based storage); JSON files are gitignored but the directory has `.gitkeep`
+- When aggregating from multiple sources (Jira + Confluence + Manual), use `Promise.allSettled` to handle partial failures gracefully
 - Confluence client supports CQL queries via `/wiki/rest/api/content/search` for comments/pages search
 - Sidebar badges are driven by props from App.tsx; pass counts down to enable notification badges
 - Client build runs `tsc` first - unused imports (even in test files) cause build failure
@@ -230,3 +252,4 @@ chatService.registerSource(new MySource());
 - Server routes only mount when all Jira env vars are set; `/api/health` always works for testing
 - jsdom doesn't implement `scrollIntoView` - tests that use it need `Element.prototype.scrollIntoView = vi.fn()` mock
 - When testing async state transitions (like `isRefreshing`), avoid synchronous assertions immediately after calling async functions; use `waitFor` to check final state
+- Hook mutation pattern: For CRUD operations, add methods that call API then `fetchActionItems()` to refresh data (see `useActionItems.ts`)
