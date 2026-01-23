@@ -1,45 +1,49 @@
+/* MD3 Top App Bar - Primary Background */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 20px;
-  background: var(--color-white);
-  border-bottom: 1px solid var(--color-border);
+  min-height: 64px;
+  padding: var(--md-sys-spacing-3) var(--md-sys-spacing-5);
+  background: var(--md-sys-color-primary);
+  border-bottom: none;
 }
 
 .header__title {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--color-text-primary);
+  font: var(--md-sys-typescale-title-large);
+  color: var(--md-sys-color-on-primary);
   margin: 0;
 }
 
 .header__actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--md-sys-spacing-4);
 }
 
 .header__refreshed {
-  font-size: 12px;
-  color: var(--color-text-muted);
+  font: var(--md-sys-typescale-body-small);
+  color: rgba(255, 255, 255, 0.8);
 }
 
+/* MD3 Outlined Button (inverse on primary) */
 .header__refresh-btn {
-  padding: 8px 16px;
-  background: var(--color-primary);
-  color: var(--color-white);
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
+  padding: var(--md-sys-spacing-2) var(--md-sys-spacing-6);
+  background: transparent;
+  color: var(--md-sys-color-on-primary);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--md-sys-shape-corner-full);
+  font: var(--md-sys-typescale-label-large);
+  box-shadow: none;
+  transition: all var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
 }
 
 .header__refresh-btn:hover:not(:disabled) {
-  background: var(--color-primary-hover);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.8);
 }
 
 .header__refresh-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.38;
   cursor: not-allowed;
 }

@@ -1,27 +1,29 @@
+/* MD3 Card */
 .issue-card {
-  background: var(--color-white);
-  border-radius: 4px;
-  padding: 12px;
+  background: var(--md-sys-color-surface-container-lowest);
+  border-radius: var(--md-sys-shape-corner-medium);
+  padding: var(--md-sys-spacing-3);
   cursor: pointer;
   border: none;
-  border-left: 3px solid var(--color-border);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.2s;
+  border-left: 4px solid var(--md-sys-color-primary);
+  box-shadow: var(--md-sys-elevation-level1);
+  transition: all var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
   width: 100%;
   text-align: left;
   font-family: inherit;
 }
 
 .issue-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--md-sys-elevation-level2);
+  transform: translateY(-2px);
 }
 
 .issue-card--todo {
-  border-left-color: var(--color-status-default-text);
+  border-left-color: var(--md-sys-color-outline);
 }
 
 .issue-card--inprogress {
-  border-left-color: var(--color-primary);
+  border-left-color: var(--md-sys-color-primary);
 }
 
 .issue-card--done {
@@ -31,17 +33,18 @@
 .issue-card__header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: var(--md-sys-spacing-2);
+  margin-bottom: var(--md-sys-spacing-2);
 }
 
+/* MD3 Type Badge */
 .issue-card__type {
-  font-size: 10px;
+  font: var(--md-sys-typescale-label-small);
   text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: 3px;
-  background: var(--color-status-default-bg);
-  color: var(--color-text-secondary);
+  padding: 2px 8px;
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface-variant);
 }
 
 .issue-card__type--initiative {
@@ -65,35 +68,37 @@
 }
 
 .issue-card__key {
-  font-size: 12px;
-  color: var(--color-text-muted);
+  font: var(--md-sys-typescale-body-small);
+  color: var(--md-sys-color-outline);
 }
 
+/* MD3 Error Badge */
 .issue-card__blocked {
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 3px;
-  background: var(--color-error-light);
-  color: var(--color-white);
+  font: var(--md-sys-typescale-label-small);
+  padding: 2px 8px;
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  background: var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error);
   margin-left: auto;
 }
 
 .issue-card__summary {
-  font-size: 14px;
-  line-height: 1.4;
-  margin-bottom: 8px;
+  font: var(--md-sys-typescale-body-medium);
+  line-height: 1.5;
+  margin-bottom: var(--md-sys-spacing-2);
+  color: var(--md-sys-color-on-surface);
 }
 
 .issue-card__footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12px;
-  color: var(--color-text-muted);
+  font: var(--md-sys-typescale-body-small);
+  color: var(--md-sys-color-outline);
 }
 
 .issue-card__estimate {
-  background: var(--color-status-default-bg);
-  padding: 2px 6px;
-  border-radius: 3px;
+  background: var(--md-sys-color-surface-container-high);
+  padding: 2px 8px;
+  border-radius: var(--md-sys-shape-corner-small);
 }

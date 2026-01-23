@@ -194,6 +194,9 @@ cd shared && npm run build
 ### Client Structure
 - Global styles in `client/src/index.css` with CSS custom properties (`:root` variables for colors)
 - Components have co-located CSS files (e.g., `Header.css`, `Sidebar.css`) that use these variables
+- MD3 color tokens follow naming: `--md-sys-color-{role}` (primary, surface, outline, etc.)
+- Surface containers use tonal elevation: lowest → low → default → high → highest
+- Status-specific borders use left border pattern (4px solid) on cards
 - Sidebar navigation uses data-driven `sections` array in `Sidebar.tsx` for extensibility
 - Data hooks expose granular loading states: `isInitialLoad` (first fetch) and `isRefreshing` (subsequent fetches)
 

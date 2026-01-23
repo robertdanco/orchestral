@@ -1,48 +1,62 @@
+/* MD3 Tree View */
 .tree-view {
-  padding: 16px;
+  padding: var(--md-sys-spacing-4);
 }
 
 .tree-empty {
   text-align: center;
-  padding: 48px;
-  color: var(--color-text-muted);
+  padding: var(--md-sys-spacing-12);
+  color: var(--md-sys-color-on-surface-variant);
+  font: var(--md-sys-typescale-body-large);
 }
 
 .tree-node__row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px;
-  border-radius: 4px;
+  gap: var(--md-sys-spacing-2);
+  padding: var(--md-sys-spacing-2);
+  border-radius: var(--md-sys-shape-corner-small);
   cursor: default;
+  transition: background var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
 }
 
 .tree-node__row:hover {
-  background: var(--color-bg-tertiary);
+  background: var(--md-sys-color-surface-container);
 }
 
+/* MD3 Toggle Button */
 .tree-node__toggle {
   background: none;
   border: none;
   cursor: pointer;
-  width: 20px;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--md-sys-shape-corner-full);
   font-size: 10px;
-  color: var(--color-text-muted);
-}
-
-.tree-node__spacer {
-  width: 20px;
-}
-
-.tree-node__type {
-  width: 20px;
-  height: 20px;
+  color: var(--md-sys-color-outline);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 3px;
-  font-size: 11px;
-  font-weight: 600;
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.tree-node__toggle:hover {
+  background: var(--md-sys-color-surface-container-high);
+}
+
+.tree-node__spacer {
+  width: 24px;
+}
+
+/* MD3 Type Icon */
+.tree-node__type {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  font: var(--md-sys-typescale-label-small);
   color: var(--color-white);
 }
 
@@ -70,9 +84,8 @@
   background: none;
   border: none;
   padding: 0;
-  font-size: 12px;
-  font-family: inherit;
-  color: var(--color-primary);
+  font: var(--md-sys-typescale-body-small);
+  color: var(--md-sys-color-primary);
   cursor: pointer;
 }
 
@@ -85,23 +98,23 @@
   background: none;
   border: none;
   padding: 0;
-  font-size: 14px;
-  font-family: inherit;
+  font: var(--md-sys-typescale-body-medium);
   text-align: left;
   cursor: pointer;
   color: inherit;
 }
 
+/* MD3 Status Chip */
 .tree-node__status {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 3px;
-  background: var(--color-status-default-bg);
+  font: var(--md-sys-typescale-label-small);
+  padding: 4px 10px;
+  border-radius: var(--md-sys-shape-corner-small);
+  background: var(--md-sys-color-surface-container-high);
 }
 
 .tree-node__status--todo {
-  background: var(--color-status-default-bg);
-  color: var(--color-text-secondary);
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface-variant);
 }
 
 .tree-node__status--inprogress {
@@ -115,18 +128,18 @@
 }
 
 .tree-node__progress {
-  font-size: 12px;
-  color: var(--color-text-muted);
+  font: var(--md-sys-typescale-body-small);
+  color: var(--md-sys-color-outline);
 }
 
 .tree-node__assignee {
-  font-size: 12px;
-  color: var(--color-text-muted);
-  background: var(--color-bg-tertiary);
-  padding: 2px 8px;
-  border-radius: 12px;
+  font: var(--md-sys-typescale-label-medium);
+  color: var(--md-sys-color-outline);
+  background: var(--md-sys-color-surface-container);
+  padding: 4px 10px;
+  border-radius: var(--md-sys-shape-corner-full);
 }
 
 .tree-node__children {
-  margin-top: 4px;
+  margin-top: var(--md-sys-spacing-1);
 }

@@ -1,39 +1,156 @@
+/* Material Design 3 - Foundation Tokens */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap');
+
 :root {
-  /* Primary colors */
-  --color-primary: #0052cc;
-  --color-primary-hover: #0747a6;
-  --color-primary-light: rgba(0, 82, 204, 0.2);
+  /* ===== MD3 Color System - Indigo Primary ===== */
 
-  /* Status colors */
-  --color-done: #36b37e;
-  --color-done-bg: #e3fcef;
-  --color-done-text: #006644;
-  --color-error: #de350b;
-  --color-error-bg: #ffebe6;
-  --color-error-light: #ff5630;
-  --color-inprogress: #0052cc;
-  --color-inprogress-bg: #deebff;
-  --color-inprogress-text: #0747a6;
+  /* Primary */
+  --md-sys-color-primary: #3F51B5;
+  --md-sys-color-primary-dark: #283593;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #E8EAF6;
+  --md-sys-color-on-primary-container: #1A237E;
 
-  /* Issue type colors */
-  --color-epic: #6554c0;
-  --color-story: #36b37e;
-  --color-bug: #ff5630;
-  --color-task: #0065ff;
+  /* Secondary */
+  --md-sys-color-secondary: #009688;
+  --md-sys-color-on-secondary: #FFFFFF;
+  --md-sys-color-secondary-container: #B2DFDB;
+  --md-sys-color-on-secondary-container: #004D40;
 
-  /* Neutral colors */
-  --color-bg: #f5f5f5;
-  --color-bg-secondary: #fafbfc;
-  --color-bg-tertiary: #f4f5f7;
-  --color-border: #dfe1e6;
-  --color-border-light: #ebecf0;
-  --color-text-primary: #172b4d;
-  --color-text-secondary: #42526e;
-  --color-text-muted: #5e6c84;
-  --color-text-disabled: #a5adba;
-  --color-white: #fff;
-  --color-status-default-bg: #dfe1e6;
-  --color-status-default-text: #6b778c;
+  /* Tertiary */
+  --md-sys-color-tertiary: #FFC107;
+  --md-sys-color-on-tertiary: #000000;
+  --md-sys-color-tertiary-container: #FFF8E1;
+  --md-sys-color-on-tertiary-container: #7A5700;
+
+  /* Error */
+  --md-sys-color-error: #B3261E;
+  --md-sys-color-on-error: #FFFFFF;
+  --md-sys-color-error-container: #F9DEDC;
+  --md-sys-color-on-error-container: #8C1D18;
+
+  /* Surface System (Tonal Elevation) - Neutral grays for higher contrast */
+  --md-sys-color-surface: #FFFBFE;
+  --md-sys-color-on-surface: #121212;
+  --md-sys-color-surface-variant: #E7E0EC;
+  --md-sys-color-on-surface-variant: #3D3D3D;
+  --md-sys-color-surface-container-lowest: #FFFFFF;
+  --md-sys-color-surface-container-low: #F5F5F5;
+  --md-sys-color-surface-container: #EEEEEE;
+  --md-sys-color-surface-container-high: #E0E0E0;
+  --md-sys-color-surface-container-highest: #D6D6D6;
+
+  /* Outline - Stronger for higher contrast */
+  --md-sys-color-outline: #5F5F5F;
+  --md-sys-color-outline-variant: #9E9E9E;
+
+  /* Inverse */
+  --md-sys-color-inverse-surface: #313033;
+  --md-sys-color-inverse-on-surface: #F4EFF4;
+  --md-sys-color-inverse-primary: #D0BCFF;
+
+  /* ===== Status Colors ===== */
+  --color-done: #4CAF50;
+  --color-done-bg: #E8F5E9;
+  --color-done-text: #1B5E20;
+  --color-inprogress: var(--md-sys-color-primary);
+  --color-inprogress-bg: var(--md-sys-color-primary-container);
+  --color-inprogress-text: var(--md-sys-color-on-primary-container);
+
+  /* Issue Type Colors */
+  --color-epic: #7C4DFF;
+  --color-story: #4CAF50;
+  --color-bug: #F44336;
+  --color-task: var(--md-sys-color-primary);
+
+  /* ===== MD3 Typography Scale ===== */
+  --md-sys-typescale-display-large: 600 57px/64px 'Roboto', sans-serif;
+  --md-sys-typescale-display-medium: 600 45px/52px 'Roboto', sans-serif;
+  --md-sys-typescale-display-small: 600 36px/44px 'Roboto', sans-serif;
+
+  --md-sys-typescale-headline-large: 600 32px/40px 'Roboto', sans-serif;
+  --md-sys-typescale-headline-medium: 600 28px/36px 'Roboto', sans-serif;
+  --md-sys-typescale-headline-small: 600 24px/32px 'Roboto', sans-serif;
+
+  --md-sys-typescale-title-large: 500 22px/28px 'Roboto', sans-serif;
+  --md-sys-typescale-title-medium: 500 16px/24px 'Roboto', sans-serif;
+  --md-sys-typescale-title-small: 500 14px/20px 'Roboto', sans-serif;
+
+  --md-sys-typescale-body-large: 400 16px/24px 'Roboto', sans-serif;
+  --md-sys-typescale-body-medium: 400 14px/20px 'Roboto', sans-serif;
+  --md-sys-typescale-body-small: 400 12px/16px 'Roboto', sans-serif;
+
+  --md-sys-typescale-label-large: 500 14px/20px 'Roboto', sans-serif;
+  --md-sys-typescale-label-medium: 500 12px/16px 'Roboto', sans-serif;
+  --md-sys-typescale-label-small: 500 11px/16px 'Roboto', sans-serif;
+
+  /* ===== MD3 Shape System ===== */
+  --md-sys-shape-corner-none: 0;
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-full: 9999px;
+
+  /* ===== MD3 Elevation System ===== */
+  --md-sys-elevation-level0: none;
+  --md-sys-elevation-level1: 0 1px 2px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  --md-sys-elevation-level2: 0 2px 4px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.08);
+  --md-sys-elevation-level3: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.08);
+  --md-sys-elevation-level4: 0 6px 12px rgba(0, 0, 0, 0.1), 0 12px 24px rgba(0, 0, 0, 0.08);
+  --md-sys-elevation-level5: 0 8px 16px rgba(0, 0, 0, 0.1), 0 16px 32px rgba(0, 0, 0, 0.08);
+
+  /* ===== MD3 Motion System ===== */
+  --md-sys-motion-duration-short1: 50ms;
+  --md-sys-motion-duration-short2: 100ms;
+  --md-sys-motion-duration-short3: 150ms;
+  --md-sys-motion-duration-short4: 200ms;
+  --md-sys-motion-duration-medium1: 250ms;
+  --md-sys-motion-duration-medium2: 300ms;
+  --md-sys-motion-duration-medium3: 350ms;
+  --md-sys-motion-duration-medium4: 400ms;
+  --md-sys-motion-duration-long1: 450ms;
+  --md-sys-motion-duration-long2: 500ms;
+
+  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-standard-decelerate: cubic-bezier(0, 0, 0, 1);
+  --md-sys-motion-easing-standard-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --md-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+
+  /* ===== MD3 Spacing Scale (4dp base) ===== */
+  --md-sys-spacing-1: 4px;
+  --md-sys-spacing-2: 8px;
+  --md-sys-spacing-3: 12px;
+  --md-sys-spacing-4: 16px;
+  --md-sys-spacing-5: 20px;
+  --md-sys-spacing-6: 24px;
+  --md-sys-spacing-8: 32px;
+  --md-sys-spacing-10: 40px;
+  --md-sys-spacing-12: 48px;
+  --md-sys-spacing-16: 64px;
+
+  /* ===== Legacy Aliases (for backward compatibility) ===== */
+  --color-primary: var(--md-sys-color-primary);
+  --color-primary-hover: #303F9F;
+  --color-primary-light: var(--md-sys-color-primary-container);
+  --color-error: var(--md-sys-color-error);
+  --color-error-bg: var(--md-sys-color-error-container);
+  --color-error-light: #EF5350;
+  --color-bg: var(--md-sys-color-surface);
+  --color-bg-secondary: var(--md-sys-color-surface-container-low);
+  --color-bg-tertiary: var(--md-sys-color-surface-container);
+  --color-border: var(--md-sys-color-outline-variant);
+  --color-border-light: var(--md-sys-color-surface-container-high);
+  --color-text-primary: var(--md-sys-color-on-surface);
+  --color-text-secondary: var(--md-sys-color-on-surface-variant);
+  --color-text-muted: var(--md-sys-color-outline);
+  --color-text-disabled: #A5ADBA;
+  --color-white: #FFFFFF;
+  --color-status-default-bg: var(--md-sys-color-surface-container-high);
+  --color-status-default-text: var(--md-sys-color-on-surface-variant);
 }
 
 * {
@@ -43,9 +160,23 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--color-bg);
-  color: var(--color-text-primary);
+  font: var(--md-sys-typescale-body-medium);
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Base button reset */
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
 }
 
 .app {
@@ -62,8 +193,9 @@ body {
 
 .main {
   flex: 1;
-  padding: 1rem;
+  padding: var(--md-sys-spacing-4);
   overflow-y: auto;
+  background: var(--md-sys-color-surface);
 }
 
 .main--with-panel {
@@ -80,15 +212,21 @@ body {
 }
 
 .error h2 {
-  color: var(--color-error);
+  font: var(--md-sys-typescale-headline-medium);
+  color: var(--md-sys-color-error);
 }
 
 .error button {
-  margin-top: 16px;
-  padding: 8px 16px;
-  background: var(--color-primary);
-  color: var(--color-white);
+  margin-top: var(--md-sys-spacing-4);
+  padding: var(--md-sys-spacing-2) var(--md-sys-spacing-4);
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
   border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  border-radius: var(--md-sys-shape-corner-full);
+  font: var(--md-sys-typescale-label-large);
+  transition: background var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.error button:hover {
+  background: var(--color-primary-hover);
 }

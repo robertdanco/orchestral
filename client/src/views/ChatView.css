@@ -1,41 +1,42 @@
+/* MD3 Chat View */
 .chat-view {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 60px);
-  background: var(--color-bg);
+  background: var(--md-sys-color-surface);
 }
 
 .chat-view__messages {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  padding: var(--md-sys-spacing-4);
   max-width: 800px;
   margin: 0 auto;
   width: 100%;
 }
 
+/* MD3 Empty State */
 .chat-view__empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 48px 24px;
+  padding: var(--md-sys-spacing-12) var(--md-sys-spacing-6);
   height: 100%;
 }
 
 .chat-view__empty-title {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: 12px;
+  font: var(--md-sys-typescale-headline-small);
+  color: var(--md-sys-color-on-surface);
+  margin-bottom: var(--md-sys-spacing-3);
 }
 
 .chat-view__empty-description {
-  font-size: 16px;
-  color: var(--color-text-muted);
+  font: var(--md-sys-typescale-body-large);
+  color: var(--md-sys-color-outline);
   max-width: 400px;
-  margin-bottom: 32px;
+  margin-bottom: var(--md-sys-spacing-8);
 }
 
 .chat-view__suggestions {
@@ -44,59 +45,61 @@
 }
 
 .chat-view__suggestions-label {
-  font-size: 12px;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  margin-bottom: 12px;
+  font: var(--md-sys-typescale-label-large);
+  color: var(--md-sys-color-outline);
+  margin-bottom: var(--md-sys-spacing-3);
 }
 
 .chat-view__suggestion-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--md-sys-spacing-2);
   justify-content: center;
 }
 
+/* MD3 Suggestion Chip (Outlined with primary accent) */
 .chat-view__suggestion {
-  padding: 10px 16px;
-  background: var(--color-white);
-  border: 1px solid var(--color-border);
-  border-radius: 20px;
-  font-size: 14px;
-  color: var(--color-text-primary);
+  padding: var(--md-sys-spacing-2) var(--md-sys-spacing-4);
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-primary);
+  border-radius: var(--md-sys-shape-corner-full);
+  font: var(--md-sys-typescale-label-large);
+  color: var(--md-sys-color-primary);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
 }
 
 .chat-view__suggestion:hover {
-  background: var(--color-bg-tertiary);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  background: var(--md-sys-color-primary-container);
+  border-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary-container);
 }
 
+/* MD3 Error State */
 .chat-view__error {
-  padding: 16px;
-  background: var(--color-error-bg);
-  border-radius: 8px;
-  margin-bottom: 12px;
+  padding: var(--md-sys-spacing-4);
+  background: var(--md-sys-color-error-container);
+  border-radius: var(--md-sys-shape-corner-medium);
+  margin-bottom: var(--md-sys-spacing-3);
 }
 
 .chat-view__error p {
-  color: var(--color-error);
-  font-size: 14px;
-  margin-bottom: 8px;
+  color: var(--md-sys-color-on-error-container);
+  font: var(--md-sys-typescale-body-medium);
+  margin-bottom: var(--md-sys-spacing-2);
 }
 
 .chat-view__error button {
-  padding: 6px 12px;
-  background: var(--color-white);
-  border: 1px solid var(--color-error);
-  border-radius: 4px;
-  color: var(--color-error);
-  font-size: 12px;
+  padding: 8px 16px;
+  background: var(--md-sys-color-surface-container-lowest);
+  border: 1px solid var(--md-sys-color-error);
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--md-sys-color-error);
+  font: var(--md-sys-typescale-label-large);
   cursor: pointer;
+  transition: background var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
 }
 
 .chat-view__error button:hover {
-  background: var(--color-error-bg);
+  background: var(--md-sys-color-error-container);
 }
