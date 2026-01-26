@@ -1,9 +1,8 @@
-import type { SlackChannel, SlackMessage, SlackUser } from '@orchestral/shared';
+import type { SlackChannel, SlackMessage } from '@orchestral/shared';
 
 export class SlackCache {
   private channels: Map<string, SlackChannel> = new Map();
   private messages: Map<string, SlackMessage[]> = new Map(); // channelId -> messages
-  private users: Map<string, SlackUser> = new Map();
   private lastRefreshed: Date | null = null;
 
   getChannels(): SlackChannel[] {
@@ -62,18 +61,6 @@ export class SlackCache {
     return all.filter(msg => msg.text.toLowerCase().includes(queryLower));
   }
 
-  getUser(id: string): SlackUser | undefined {
-    return this.users.get(id);
-  }
-
-  setUser(user: SlackUser): void {
-    this.users.set(user.id, user);
-  }
-
-  getUsers(): SlackUser[] {
-    return Array.from(this.users.values());
-  }
-
   getLastRefreshed(): Date | null {
     return this.lastRefreshed;
   }
@@ -81,7 +68,6 @@ export class SlackCache {
   clear(): void {
     this.channels.clear();
     this.messages.clear();
-    this.users.clear();
     this.lastRefreshed = null;
   }
 

@@ -266,3 +266,5 @@ To add a new action item source (like Manual items):
 - Tests with time-window filters (like `getRecentMessages(sinceDays)`) must use relative dates (`new Date(Date.now() - days * 24 * 60 * 60 * 1000)`) not hardcoded past dates
 - When testing components with category labels in both headers and badges, use `getByRole('heading', { name: /.../ })` to avoid "multiple elements found" errors
 - Optional integrations pattern: Pass optional client/cache params (e.g., `slackClient?: SlackClient`) and check existence before use in routes
+- Shared utilities: When a function is duplicated across files in a module, extract to `<module>/utils.ts` (e.g., `server/src/slack/utils.ts`)
+- Detection functions (like `detectSlackActions`, `detectJiraActions`) should only process cached data, not fetch/populate caches - keeps them synchronous and testable

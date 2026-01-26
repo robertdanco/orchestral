@@ -1,11 +1,9 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { detectSlackActions } from './slack-actions.js';
 import { SlackCache } from '../slack/cache.js';
-import type { SlackClient } from '../slack/client.js';
 import type { SlackMessage, SlackChannel } from '@orchestral/shared';
 
 describe('detectSlackActions', () => {
-  let mockClient: SlackClient;
   let cache: SlackCache;
   const currentUserId = 'U_CURRENT';
 
@@ -34,27 +32,21 @@ describe('detectSlackActions', () => {
   beforeEach(() => {
     cache = new SlackCache();
     cache.setChannels([mockChannel]);
-
-    mockClient = {
-      fetchChannels: vi.fn().mockResolvedValue([mockChannel]),
-      fetchMessages: vi.fn().mockResolvedValue([]),
-      getCurrentUser: vi.fn().mockResolvedValue({ userId: currentUserId, userName: 'currentuser' }),
-    } as unknown as SlackClient;
   });
 
-  it('returns empty array when cache is empty', async () => {
-    const actions = await detectSlackActions(mockClient, cache, currentUserId);
+  it('returns empty array when cache is empty', () => {
+    const actions = detectSlackActions(cache, currentUserId);
     expect(actions).toEqual([]);
   });
 
-  it('detects direct mentions of current user', async () => {
+  it('detects direct mentions of current user', () => {
     const mentionMessage = createMessage({
       mentions: [currentUserId],
       text: `Hey <@${currentUserId}>, can you review this?`,
     });
     cache.setMessages('C12345', [mentionMessage]);
 
-    const actions = await detectSlackActions(mockClient, cache, currentUserId);
+    const actions = detectSlackActions(cache, currentUserId);
 
     expect(actions).toHaveLength(1);
     expect(actions[0].category).toBe('mention');
@@ -62,7 +54,7 @@ describe('detectSlackActions', () => {
     expect(actions[0].authorName).toBe('otheruser');
   });
 
-  it('detects replies to threads started by current user', async () => {
+  it('detects replies to threads started by current user', () => {
     const originalMessage = createMessage({
       ts: '1234567890.000001',
       userId: currentUserId,
@@ -77,38 +69,38 @@ describe('detectSlackActions', () => {
     });
     cache.setMessages('C12345', [originalMessage, replyMessage]);
 
-    const actions = await detectSlackActions(mockClient, cache, currentUserId);
+    const actions = detectSlackActions(cache, currentUserId);
 
     expect(actions).toHaveLength(1);
     expect(actions[0].category).toBe('thread-reply');
     expect(actions[0].priority).toBe('medium');
   });
 
-  it('ignores messages from current user', async () => {
+  it('ignores messages from current user', () => {
     const ownMessage = createMessage({
       userId: currentUserId,
       mentions: [currentUserId], // Even if user mentions themselves
     });
     cache.setMessages('C12345', [ownMessage]);
 
-    const actions = await detectSlackActions(mockClient, cache, currentUserId);
+    const actions = detectSlackActions(cache, currentUserId);
 
     expect(actions).toEqual([]);
   });
 
-  it('deduplicates action items', async () => {
+  it('deduplicates action items', () => {
     const message = createMessage({
       mentions: [currentUserId],
     });
     // Add same message twice
     cache.setMessages('C12345', [message, message]);
 
-    const actions = await detectSlackActions(mockClient, cache, currentUserId);
+    const actions = detectSlackActions(cache, currentUserId);
 
     expect(actions).toHaveLength(1);
   });
 
-  it('sorts actions by priority then date', async () => {
+  it('sorts actions by priority then date', () => {
     // Create dates within the 7-day window
     const now = new Date();
     const oneDayAgo = new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000);
@@ -126,7 +118,7 @@ describe('detectSlackActions', () => {
     });
     cache.setMessages('C12345', [olderMention, newerMention]);
 
-    const actions = await detectSlackActions(mockClient, cache, currentUserId);
+    const actions = detectSlackActions(cache, currentUserId);
 
     // Both are high priority (mentions), so should be sorted by date (newest first)
     expect(actions).toHaveLength(2);
@@ -134,13 +126,13 @@ describe('detectSlackActions', () => {
     expect(actions[1].createdAt).toBe(olderMention.createdAt);
   });
 
-  it('creates proper action item structure', async () => {
+  it('creates proper action item structure', () => {
     const message = createMessage({
       mentions: [currentUserId],
     });
     cache.setMessages('C12345', [message]);
 
-    const actions = await detectSlackActions(mockClient, cache, currentUserId);
+    const actions = detectSlackActions(cache, currentUserId);
 
     expect(actions[0]).toMatchObject({
       source: 'slack',

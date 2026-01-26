@@ -69,7 +69,7 @@ export function createActionItemsRouter(
           return [];
         }
         const currentUser = await slackClient.getCurrentUser();
-        return detectSlackActions(slackClient, slackCache, currentUser.userId);
+        return detectSlackActions(slackCache, currentUser.userId);
       })(),
     ]);
 

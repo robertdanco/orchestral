@@ -10,6 +10,7 @@ import type {
   KnowledgeSourceResult,
   Citation,
 } from '../types.js';
+import { truncateSlackText } from '../../slack/utils.js';
 
 export interface SlackMessageCitation extends Citation {
   type: 'custom';
@@ -130,7 +131,7 @@ export class SlackMessagesSource implements KnowledgeSource {
         count: results.length,
         messages: results.map((m) => ({
           author: m.userName,
-          text: this.truncateText(m.text, 200),
+          text: truncateSlackText(m.text, 200),
           timestamp: m.createdAt,
           permalink: m.permalink,
           replyCount: m.replyCount,
@@ -173,7 +174,7 @@ export class SlackMessagesSource implements KnowledgeSource {
         count: results.length,
         messages: results.map((m) => ({
           channel: m.channelName,
-          text: this.truncateText(m.text, 200),
+          text: truncateSlackText(m.text, 200),
           timestamp: m.createdAt,
           permalink: m.permalink,
         })),
@@ -204,7 +205,7 @@ export class SlackMessagesSource implements KnowledgeSource {
         messages: messages.map((m) => ({
           channel: m.channelName,
           author: m.userName,
-          text: this.truncateText(m.text, 200),
+          text: truncateSlackText(m.text, 200),
           timestamp: m.createdAt,
           permalink: m.permalink,
           replyCount: m.replyCount,
@@ -221,7 +222,7 @@ export class SlackMessagesSource implements KnowledgeSource {
       id: `slack-${message.channelId}-${message.ts}`,
       title: `Message in #${message.channelName}`,
       url: message.permalink,
-      snippet: `${message.userName}: ${this.truncateText(message.text, 100)}`,
+      snippet: `${message.userName}: ${truncateSlackText(message.text, 100)}`,
       metadata: {
         messageTs: message.ts,
         channelId: message.channelId,
@@ -229,19 +230,5 @@ export class SlackMessagesSource implements KnowledgeSource {
         authorName: message.userName,
       },
     };
-  }
-
-  private truncateText(text: string, maxLength: number): string {
-    // Clean up Slack formatting
-    const cleaned = text
-      .replace(/<@[A-Z0-9]+>/g, '@user')
-      .replace(/<#[A-Z0-9]+\|([^>]+)>/g, '#$1')
-      .replace(/<([^|>]+)\|([^>]+)>/g, '$2')
-      .replace(/<([^>]+)>/g, '$1')
-      .replace(/\n/g, ' ')
-      .trim();
-
-    if (cleaned.length <= maxLength) return cleaned;
-    return cleaned.slice(0, maxLength - 3) + '...';
   }
 }
