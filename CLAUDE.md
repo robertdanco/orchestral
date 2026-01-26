@@ -263,3 +263,6 @@ To add a new action item source (like Manual items):
 - jsdom doesn't implement `scrollIntoView` - tests that use it need `Element.prototype.scrollIntoView = vi.fn()` mock
 - When testing async state transitions (like `isRefreshing`), avoid synchronous assertions immediately after calling async functions; use `waitFor` to check final state
 - Hook mutation pattern: For CRUD operations, add methods that call API then `fetchActionItems()` to refresh data (see `useActionItems.ts`)
+- Tests with time-window filters (like `getRecentMessages(sinceDays)`) must use relative dates (`new Date(Date.now() - days * 24 * 60 * 60 * 1000)`) not hardcoded past dates
+- When testing components with category labels in both headers and badges, use `getByRole('heading', { name: /.../ })` to avoid "multiple elements found" errors
+- Optional integrations pattern: Pass optional client/cache params (e.g., `slackClient?: SlackClient`) and check existence before use in routes
