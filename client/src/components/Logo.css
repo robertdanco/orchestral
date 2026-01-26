@@ -1,0 +1,83 @@
+/* ===== Logo Component Styles ===== */
+
+.logo {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Subtle hover effect */
+.logo__bg {
+  transition: filter var(--md-sys-motion-duration-medium2, 300ms) var(--md-sys-motion-easing-standard, ease);
+}
+
+.logo:hover .logo__bg {
+  filter: brightness(1.1);
+}
+
+/* ===== Animated Logo ===== */
+
+.logo--animated .logo__wave {
+  animation: wave-pulse 3s ease-in-out infinite;
+}
+
+.logo--animated .logo__wave--1 {
+  animation-delay: 0s;
+}
+
+.logo--animated .logo__wave--2 {
+  animation-delay: 0.2s;
+}
+
+.logo--animated .logo__wave--3 {
+  animation-delay: 0.4s;
+}
+
+.logo--animated .logo__tip {
+  animation: tip-glow 2s ease-in-out infinite;
+}
+
+.logo--animated .logo__baton {
+  transform-origin: 14px 34px;
+  animation: baton-sway 4s ease-in-out infinite;
+}
+
+@keyframes wave-pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes tip-glow {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.4) drop-shadow(0 0 3px rgba(255, 193, 7, 0.6));
+  }
+}
+
+@keyframes baton-sway {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(2deg);
+  }
+  75% {
+    transform: rotate(-2deg);
+  }
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .logo--animated .logo__wave,
+  .logo--animated .logo__tip,
+  .logo--animated .logo__baton {
+    animation: none;
+  }
+}

@@ -6,3 +6,4 @@ dist/
 
 # Data files (keep directory structure but ignore persisted data)
 data/*.json
+.claude/
