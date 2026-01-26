@@ -8,6 +8,8 @@ export type {
   ConfluenceActionItem,
   ManualActionCategory,
   ManualActionItem,
+  SlackActionCategory,
+  SlackActionItem,
   ActionItem,
   ActionItemsResponse,
   CreateManualActionItemInput,
@@ -15,6 +17,14 @@ export type {
   ConfluenceUser,
   ConfluenceComment,
 } from './action-items.js';
+
+// Re-export Slack types
+export type {
+  SlackChannel,
+  SlackMessage,
+  SlackReaction,
+  SlackUser,
+} from './slack.js';
 
 // Re-export Confluence types
 export type {

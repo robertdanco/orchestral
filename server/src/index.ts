@@ -14,6 +14,9 @@ import { ConfluenceClient } from './confluence/client.js';
 import { ConfluenceCache } from './confluence/cache.js';
 import { createConfluenceRouter } from './confluence-routes.js';
 import { ConfluencePagesSource } from './chat/sources/confluence-pages.js';
+import { SlackClient } from './slack/client.js';
+import { SlackCache } from './slack/cache.js';
+import { SlackMessagesSource } from './chat/sources/slack-messages.js';
 import { createActionItemsRouter } from './action-items/routes.js';
 import { ManualItemsCache } from './action-items/manual-cache.js';
 
@@ -61,12 +64,26 @@ if (process.env.JIRA_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN
   const manualItemsCache = new ManualItemsCache();
   console.log('Manual Items cache initialized');
 
+  // Initialize Slack client and cache if token is provided
+  let slackClient: SlackClient | undefined;
+  let slackCache: SlackCache | undefined;
+  if (process.env.SLACK_BOT_TOKEN) {
+    slackClient = new SlackClient({
+      botToken: process.env.SLACK_BOT_TOKEN,
+      channelIds: (process.env.SLACK_CHANNEL_IDS || '').split(',').filter(Boolean),
+    });
+    slackCache = new SlackCache();
+    console.log('Slack integration initialized');
+  }
+
   // Mount Action Items routes
   app.use('/api/action-items', createActionItemsRouter(
     cache,
     confluenceClient,
     confluenceCache,
-    manualItemsCache
+    manualItemsCache,
+    slackClient,
+    slackCache
   ));
   console.log('Action Items integration initialized');
 
@@ -81,9 +98,16 @@ if (process.env.JIRA_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN
     // Register Confluence pages knowledge source
     chatService.registerSource(new ConfluencePagesSource(confluenceCache, confluenceClient));
 
+    // Register Slack messages knowledge source if available
+    if (slackClient && slackCache) {
+      chatService.registerSource(new SlackMessagesSource(slackClient, slackCache));
+    }
+
     // Mount chat routes
     app.use('/api/chat', createChatRouter(chatService));
-    console.log('Chat service initialized with Jira and Confluence knowledge sources');
+    const sources = ['Jira', 'Confluence'];
+    if (slackClient) sources.push('Slack');
+    console.log(`Chat service initialized with ${sources.join(', ')} knowledge sources`);
   } else {
     console.log('ANTHROPIC_API_KEY not set - chat feature disabled');
   }

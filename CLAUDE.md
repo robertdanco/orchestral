@@ -43,9 +43,13 @@ Jira Cloud API → JiraClient → Cache → Routes → React Hooks → Views
 - `routes.ts` - API endpoints mounted at `/api`
 - `confluence/` - Confluence Cloud API client, cache, and hierarchy builder (same auth as Jira)
 - `confluence-routes.ts` - Confluence API endpoints mounted at `/api/confluence`
-- `action-items/` - Aggregates actionable items from Jira, Confluence, and manual items
+- `action-items/` - Aggregates actionable items from Jira, Confluence, Slack, and manual items
   - `manual-cache.ts` - File-based persistence for manual items (saves to `data/manual-items.json`)
   - `manual-routes.ts` - CRUD endpoints for manual items
+  - `slack-actions.ts` - Detects Slack mentions and thread replies requiring attention
+- `slack/` - Slack integration (optional, requires `SLACK_BOT_TOKEN`)
+  - `client.ts` - Slack Web API client with Bearer token auth
+  - `cache.ts` - In-memory cache for channels, messages, and users
 
 ### Client (`client/src/`)
 - `hooks/` - Data fetching hooks (`useIssues`, `useHierarchy`, `useActions`, `useChat`, `useConfluence`, `useActionItems`) with loading/error states
@@ -64,6 +68,8 @@ The chat feature provides an AI assistant with pluggable knowledge sources:
 - `service.ts` - Orchestrates the full chat flow
 - `routes.ts` - Chat API endpoints
 - `sources/jira-issues.ts` - Reference implementation querying the Jira cache
+- `sources/confluence-pages.ts` - Knowledge source for Confluence pages
+- `sources/slack-messages.ts` - Knowledge source for Slack messages (optional)
 
 ### API Endpoints
 | Endpoint | Method | Purpose |
@@ -98,8 +104,10 @@ The chat feature provides an AI assistant with pluggable knowledge sources:
 The `@orchestral/shared` package contains types used by both server and client:
 - `JiraItem`, `HierarchicalJiraItem` - Core issue types
 - `ActionRequiredItem`, `ActionRequiredResult` - Action detection types
-- `ActionItem`, `JiraActionItem`, `ConfluenceActionItem`, `ManualActionItem` - Unified action item types
+- `ActionItem`, `JiraActionItem`, `ConfluenceActionItem`, `ManualActionItem`, `SlackActionItem` - Unified action item types
 - `ManualActionCategory` - Categories: task, followup, decision, reminder
+- `SlackActionCategory` - Categories: mention, thread-reply
+- `SlackChannel`, `SlackMessage`, `SlackUser`, `SlackReaction` - Slack types
 - `CreateManualActionItemInput`, `UpdateManualActionItemInput` - CRUD input types
 - `ConfluenceUser`, `ConfluenceComment` - Confluence comment types
 - `IssuesResponse`, `HierarchyResponse` - API response types
@@ -121,15 +129,11 @@ CONFLUENCE_SPACE_KEYS=DOCS,ENG
 
 # Optional: Enable AI chat feature
 ANTHROPIC_API_KEY=sk-ant-...
+
+# Optional: Enable Slack integration
+SLACK_BOT_TOKEN=xoxb-your-bot-token
+SLACK_CHANNEL_IDS=C01234,C05678  # Optional: limit to specific channels
 ```
-
-## Claude Code Hooks
-
-The project has protective hooks in `.claude/settings.local.json`:
-- **PreToolUse**: Blocks edits to `.env` files (credentials protection) - `.env.example` is allowed
-- **PostToolUse**: Runs `tsc --noEmit` in server/ and client/ after every file edit
-
-If a hook blocks an action, the error message will explain why.
 
 ## Testing
 
@@ -246,7 +250,10 @@ To add a new action item source (like Manual items):
 ## Gotchas
 
 - Manual action items persist to `data/manual-items.json` (file-based storage); JSON files are gitignored but the directory has `.gitkeep`
-- When aggregating from multiple sources (Jira + Confluence + Manual), use `Promise.allSettled` to handle partial failures gracefully
+- When aggregating from multiple sources (Jira + Confluence + Slack + Manual), use `Promise.allSettled` to handle partial failures gracefully
+- Slack integration is optional; when `SLACK_BOT_TOKEN` is not set, Slack endpoints return empty arrays gracefully
+- Slack cache is in-memory only (no file persistence) since Slack is the source of truth
+- Aggregated "All" tabs must handle partial failures: show items that succeeded, display errors for failed sources, only show empty state when no items AND no errors
 - Confluence client supports CQL queries via `/wiki/rest/api/content/search` for comments/pages search
 - Sidebar badges are driven by props from App.tsx; pass counts down to enable notification badges
 - Client build runs `tsc` first - unused imports (even in test files) cause build failure

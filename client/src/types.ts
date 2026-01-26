@@ -23,11 +23,18 @@ export type {
   ConfluenceActionItem,
   ManualActionCategory,
   ManualActionItem,
+  SlackActionCategory,
+  SlackActionItem,
   ActionItem,
   ActionItemsResponse,
   CreateManualActionItemInput,
   UpdateManualActionItemInput,
   ConfluenceUser,
   ConfluenceComment,
+  // Slack types
+  SlackChannel,
+  SlackMessage,
+  SlackReaction,
+  SlackUser,
 } from '@orchestral/shared';
 export { isValidJiraItem } from '@orchestral/shared';

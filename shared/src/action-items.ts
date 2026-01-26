@@ -1,6 +1,6 @@
 // Action Items shared types - aggregates actionable items across integrations
 
-export type ActionItemSource = 'jira' | 'confluence' | 'manual';
+export type ActionItemSource = 'jira' | 'confluence' | 'manual' | 'slack';
 
 export interface ActionItemBase {
   id: string;
@@ -39,12 +39,26 @@ export interface ManualActionItem extends ActionItemBase {
   completedAt?: string | null;
 }
 
-export type ActionItem = JiraActionItem | ConfluenceActionItem | ManualActionItem;
+export type SlackActionCategory = 'mention' | 'thread-reply';
+
+export interface SlackActionItem extends ActionItemBase {
+  source: 'slack';
+  category: SlackActionCategory;
+  channelId: string;
+  channelName: string;
+  messageTs: string;
+  threadTs: string | null;
+  authorId: string;
+  authorName: string;
+}
+
+export type ActionItem = JiraActionItem | ConfluenceActionItem | ManualActionItem | SlackActionItem;
 
 export interface ActionItemsResponse {
   jira: { items: JiraActionItem[]; count: number; error?: string };
   confluence: { items: ConfluenceActionItem[]; count: number; error?: string };
   manual: { items: ManualActionItem[]; count: number; error?: string };
+  slack: { items: SlackActionItem[]; count: number; error?: string };
   totalCount: number;
   lastRefreshed: string;
 }

@@ -1,5 +1,5 @@
 import type { ActionItem, ManualActionItem } from '../../types';
-import { MANUAL_CATEGORY_LABELS, isJiraItem, isConfluenceItem, isManualItem } from './utils';
+import { MANUAL_CATEGORY_LABELS, SLACK_CATEGORY_LABELS, isJiraItem, isConfluenceItem, isManualItem, isSlackItem } from './utils';
 
 interface ActionItemCardProps {
   item: ActionItem;
@@ -139,6 +139,32 @@ export function ActionItemCard({
             className="action-item-card__link"
           >
             View Comment
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  if (isSlackItem(item)) {
+    const categoryLabel = SLACK_CATEGORY_LABELS[item.category];
+    return (
+      <div className={`action-item-card action-item-card--slack ${priorityClass}`}>
+        <div className="action-item-card__header">
+          <span className="action-item-card__category-badge">{categoryLabel}</span>
+          <span className="action-item-card__channel">#{item.channelName}</span>
+          <span className="action-item-card__source">Slack</span>
+        </div>
+        <div className="action-item-card__title">{item.title}</div>
+        <div className="action-item-card__author">by {item.authorName}</div>
+        <div className="action-item-card__footer">
+          <span className="action-item-card__reason">{item.reason}</span>
+          <a
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="action-item-card__link"
+          >
+            View in Slack
           </a>
         </div>
       </div>
