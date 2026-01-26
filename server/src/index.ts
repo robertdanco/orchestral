@@ -17,6 +17,9 @@ import { ConfluencePagesSource } from './chat/sources/confluence-pages.js';
 import { SlackClient } from './slack/client.js';
 import { SlackCache } from './slack/cache.js';
 import { SlackMessagesSource } from './chat/sources/slack-messages.js';
+import { GoogleClient } from './google/client.js';
+import { GoogleDocsCache } from './google/cache.js';
+import { GoogleDocsSource } from './chat/sources/google-docs.js';
 import { createActionItemsRouter } from './action-items/routes.js';
 import { ManualItemsCache } from './action-items/manual-cache.js';
 
@@ -76,6 +79,27 @@ if (process.env.JIRA_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN
     console.log('Slack integration initialized');
   }
 
+  // Initialize Google client and cache if credentials are provided
+  let googleClient: GoogleClient | undefined;
+  let googleDocsCache: GoogleDocsCache | undefined;
+  const meetingNotesPattern = process.env.GOOGLE_MEETING_NOTES_PATTERN || 'Meeting Notes.*|Transcript.*';
+  if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY_PATH || process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+    try {
+      const serviceAccountKey = process.env.GOOGLE_SERVICE_ACCOUNT_KEY
+        ? JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY)
+        : undefined;
+      googleClient = new GoogleClient({
+        serviceAccountKeyPath: process.env.GOOGLE_SERVICE_ACCOUNT_KEY_PATH,
+        serviceAccountKey,
+        folderIds: (process.env.GOOGLE_FOLDER_IDS || '').split(',').filter(Boolean),
+      });
+      googleDocsCache = new GoogleDocsCache();
+      console.log('Google Docs integration initialized');
+    } catch (error) {
+      console.error('Failed to initialize Google Docs integration:', error);
+    }
+  }
+
   // Mount Action Items routes
   app.use('/api/action-items', createActionItemsRouter(
     cache,
@@ -83,7 +107,10 @@ if (process.env.JIRA_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN
     confluenceCache,
     manualItemsCache,
     slackClient,
-    slackCache
+    slackCache,
+    googleClient,
+    googleDocsCache,
+    meetingNotesPattern
   ));
   console.log('Action Items integration initialized');
 
@@ -103,10 +130,16 @@ if (process.env.JIRA_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN
       chatService.registerSource(new SlackMessagesSource(slackClient, slackCache));
     }
 
+    // Register Google Docs knowledge source if available
+    if (googleClient && googleDocsCache) {
+      chatService.registerSource(new GoogleDocsSource(googleClient, googleDocsCache));
+    }
+
     // Mount chat routes
     app.use('/api/chat', createChatRouter(chatService));
     const sources = ['Jira', 'Confluence'];
     if (slackClient) sources.push('Slack');
+    if (googleClient) sources.push('Google Docs');
     console.log(`Chat service initialized with ${sources.join(', ')} knowledge sources`);
   } else {
     console.log('ANTHROPIC_API_KEY not set - chat feature disabled');

@@ -1,6 +1,8 @@
 // Action Items shared types - aggregates actionable items across integrations
 
-export type ActionItemSource = 'jira' | 'confluence' | 'manual' | 'slack';
+import type { GoogleDocsActionCategory } from './google.js';
+
+export type ActionItemSource = 'jira' | 'confluence' | 'manual' | 'slack' | 'google-docs';
 
 export interface ActionItemBase {
   id: string;
@@ -52,13 +54,23 @@ export interface SlackActionItem extends ActionItemBase {
   authorName: string;
 }
 
-export type ActionItem = JiraActionItem | ConfluenceActionItem | ManualActionItem | SlackActionItem;
+export interface GoogleDocsActionItem extends ActionItemBase {
+  source: 'google-docs';
+  category: GoogleDocsActionCategory;
+  documentId: string;
+  documentTitle: string;
+  meetingDate: string;
+  assignee: string | null;
+}
+
+export type ActionItem = JiraActionItem | ConfluenceActionItem | ManualActionItem | SlackActionItem | GoogleDocsActionItem;
 
 export interface ActionItemsResponse {
   jira: { items: JiraActionItem[]; count: number; error?: string };
   confluence: { items: ConfluenceActionItem[]; count: number; error?: string };
   manual: { items: ManualActionItem[]; count: number; error?: string };
   slack: { items: SlackActionItem[]; count: number; error?: string };
+  googleDocs: { items: GoogleDocsActionItem[]; count: number; error?: string };
   totalCount: number;
   lastRefreshed: string;
 }

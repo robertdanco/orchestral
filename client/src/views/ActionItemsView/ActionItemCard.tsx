@@ -1,5 +1,5 @@
 import type { ActionItem, ManualActionItem } from '../../types';
-import { MANUAL_CATEGORY_LABELS, SLACK_CATEGORY_LABELS, isJiraItem, isConfluenceItem, isManualItem, isSlackItem } from './utils';
+import { MANUAL_CATEGORY_LABELS, SLACK_CATEGORY_LABELS, GOOGLE_DOCS_CATEGORY_LABELS, isJiraItem, isConfluenceItem, isManualItem, isSlackItem, isGoogleDocsItem } from './utils';
 
 interface ActionItemCardProps {
   item: ActionItem;
@@ -165,6 +165,34 @@ export function ActionItemCard({
             className="action-item-card__link"
           >
             View in Slack
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  if (isGoogleDocsItem(item)) {
+    const categoryLabel = GOOGLE_DOCS_CATEGORY_LABELS[item.category];
+    return (
+      <div className={`action-item-card action-item-card--google-docs ${priorityClass}`}>
+        <div className="action-item-card__header">
+          <span className="action-item-card__category-badge">{categoryLabel}</span>
+          <span className="action-item-card__document-title">{item.documentTitle}</span>
+          <span className="action-item-card__source">Meeting Notes</span>
+        </div>
+        <div className="action-item-card__title">{item.title}</div>
+        {item.assignee && (
+          <div className="action-item-card__author">Assigned to {item.assignee}</div>
+        )}
+        <div className="action-item-card__footer">
+          <span className="action-item-card__reason">{item.meetingDate}</span>
+          <a
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="action-item-card__link"
+          >
+            View in Google Docs
           </a>
         </div>
       </div>

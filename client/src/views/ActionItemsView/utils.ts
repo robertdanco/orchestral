@@ -1,4 +1,4 @@
-import type { JiraActionItem, ConfluenceActionItem, ManualActionItem, SlackActionItem, ActionItem } from '../../types';
+import type { JiraActionItem, ConfluenceActionItem, ManualActionItem, SlackActionItem, GoogleDocsActionItem, ActionItem } from '../../types';
 
 export const JIRA_CATEGORY_LABELS: Record<JiraActionItem['category'], string> = {
   blocker: 'Blockers',
@@ -27,6 +27,12 @@ export const SLACK_CATEGORY_LABELS: Record<SlackActionItem['category'], string> 
   'thread-reply': 'Thread Replies',
 };
 
+export const GOOGLE_DOCS_CATEGORY_LABELS: Record<GoogleDocsActionItem['category'], string> = {
+  'task': 'Tasks',
+  'decision': 'Decisions',
+  'followup': 'Follow-ups',
+};
+
 export function isJiraItem(item: ActionItem): item is JiraActionItem {
   return item.source === 'jira';
 }
@@ -41,6 +47,10 @@ export function isManualItem(item: ActionItem): item is ManualActionItem {
 
 export function isSlackItem(item: ActionItem): item is SlackActionItem {
   return item.source === 'slack';
+}
+
+export function isGoogleDocsItem(item: ActionItem): item is GoogleDocsActionItem {
+  return item.source === 'google-docs';
 }
 
 export function groupByCategory<T extends { category: string }>(

@@ -10,6 +10,7 @@ export type {
   ManualActionItem,
   SlackActionCategory,
   SlackActionItem,
+  GoogleDocsActionItem,
   ActionItem,
   ActionItemsResponse,
   CreateManualActionItemInput,
@@ -17,6 +18,14 @@ export type {
   ConfluenceUser,
   ConfluenceComment,
 } from './action-items.js';
+
+// Re-export Google types
+export type {
+  GoogleDoc,
+  GoogleDocsActionCategory,
+  ParsedActionItem,
+  ParsedMeetingNotes,
+} from './google.js';
 
 // Re-export Slack types
 export type {

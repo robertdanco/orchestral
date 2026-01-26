@@ -25,12 +25,18 @@ export type {
   ManualActionItem,
   SlackActionCategory,
   SlackActionItem,
+  GoogleDocsActionItem,
+  GoogleDocsActionCategory,
   ActionItem,
   ActionItemsResponse,
   CreateManualActionItemInput,
   UpdateManualActionItemInput,
   ConfluenceUser,
   ConfluenceComment,
+  // Google types
+  GoogleDoc,
+  ParsedActionItem,
+  ParsedMeetingNotes,
   // Slack types
   SlackChannel,
   SlackMessage,

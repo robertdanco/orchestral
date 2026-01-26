@@ -43,13 +43,18 @@ Jira Cloud API → JiraClient → Cache → Routes → React Hooks → Views
 - `routes.ts` - API endpoints mounted at `/api`
 - `confluence/` - Confluence Cloud API client, cache, and hierarchy builder (same auth as Jira)
 - `confluence-routes.ts` - Confluence API endpoints mounted at `/api/confluence`
-- `action-items/` - Aggregates actionable items from Jira, Confluence, Slack, and manual items
+- `action-items/` - Aggregates actionable items from Jira, Confluence, Slack, Google Docs, and manual items
   - `manual-cache.ts` - File-based persistence for manual items (saves to `data/manual-items.json`)
   - `manual-routes.ts` - CRUD endpoints for manual items
   - `slack-actions.ts` - Detects Slack mentions and thread replies requiring attention
+  - `google-docs-actions.ts` - Extracts action items from Google Docs meeting notes
 - `slack/` - Slack integration (optional, requires `SLACK_BOT_TOKEN`)
   - `client.ts` - Slack Web API client with Bearer token auth
   - `cache.ts` - In-memory cache for channels, messages, and users
+- `google/` - Google Docs integration (optional, requires service account)
+  - `client.ts` - Google Drive + Docs API client with service account auth
+  - `cache.ts` - In-memory cache for documents
+  - `parser.ts` - Meeting notes parser to extract action items and decisions
 
 ### Client (`client/src/`)
 - `hooks/` - Data fetching hooks (`useIssues`, `useHierarchy`, `useActions`, `useChat`, `useConfluence`, `useActionItems`) with loading/error states
@@ -70,6 +75,7 @@ The chat feature provides an AI assistant with pluggable knowledge sources:
 - `sources/jira-issues.ts` - Reference implementation querying the Jira cache
 - `sources/confluence-pages.ts` - Knowledge source for Confluence pages
 - `sources/slack-messages.ts` - Knowledge source for Slack messages (optional)
+- `sources/google-docs.ts` - Knowledge source for Google Docs (optional)
 
 ### API Endpoints
 | Endpoint | Method | Purpose |
@@ -104,16 +110,19 @@ The chat feature provides an AI assistant with pluggable knowledge sources:
 The `@orchestral/shared` package contains types used by both server and client:
 - `JiraItem`, `HierarchicalJiraItem` - Core issue types
 - `ActionRequiredItem`, `ActionRequiredResult` - Action detection types
-- `ActionItem`, `JiraActionItem`, `ConfluenceActionItem`, `ManualActionItem`, `SlackActionItem` - Unified action item types
+- `ActionItem`, `JiraActionItem`, `ConfluenceActionItem`, `ManualActionItem`, `SlackActionItem`, `GoogleDocsActionItem` - Unified action item types
 - `ManualActionCategory` - Categories: task, followup, decision, reminder
 - `SlackActionCategory` - Categories: mention, thread-reply
+- `GoogleDocsActionCategory` - Categories: task, decision, followup
 - `SlackChannel`, `SlackMessage`, `SlackUser`, `SlackReaction` - Slack types
+- `GoogleDoc`, `ParsedActionItem`, `ParsedMeetingNotes` - Google Docs types
 - `CreateManualActionItemInput`, `UpdateManualActionItemInput` - CRUD input types
 - `ConfluenceUser`, `ConfluenceComment` - Confluence comment types
 - `IssuesResponse`, `HierarchyResponse` - API response types
 - `isValidJiraItem()` - Runtime type validation
 
 Both `server/src/types.ts` and `client/src/types.ts` re-export from shared.
+- When adding new shared types, update BOTH `shared/src/index.ts` AND `client/src/types.ts` to re-export them
 
 ## Environment Variables
 
@@ -133,6 +142,13 @@ ANTHROPIC_API_KEY=sk-ant-...
 # Optional: Enable Slack integration
 SLACK_BOT_TOKEN=xoxb-your-bot-token
 SLACK_CHANNEL_IDS=C01234,C05678  # Optional: limit to specific channels
+
+# Optional: Enable Google Docs integration
+GOOGLE_SERVICE_ACCOUNT_KEY_PATH=./google-service-account.json
+# Or inline JSON for containers:
+GOOGLE_SERVICE_ACCOUNT_KEY={"type":"service_account",...}
+GOOGLE_FOLDER_IDS=folder_id_1,folder_id_2  # Optional: limit to specific folders
+GOOGLE_MEETING_NOTES_PATTERN=Meeting Notes.*|Transcript.*  # Regex pattern
 ```
 
 ## Testing
@@ -268,3 +284,6 @@ To add a new action item source (like Manual items):
 - Optional integrations pattern: Pass optional client/cache params (e.g., `slackClient?: SlackClient`) and check existence before use in routes
 - Shared utilities: When a function is duplicated across files in a module, extract to `<module>/utils.ts` (e.g., `server/src/slack/utils.ts`)
 - Detection functions (like `detectSlackActions`, `detectJiraActions`) should only process cached data, not fetch/populate caches - keeps them synchronous and testable
+- Google Docs integration requires a GCP service account with Drive + Docs API access; the service account email must be shared on target folders
+- Google Docs cache is in-memory only; meeting notes parser extracts action items from sections like "Action Items", "Next Steps", "Decisions"
+- Google APIs use `googleapis` npm package with service account auth; credentials can be path (`GOOGLE_SERVICE_ACCOUNT_KEY_PATH`) or inline JSON (`GOOGLE_SERVICE_ACCOUNT_KEY`)

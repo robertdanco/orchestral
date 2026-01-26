@@ -4,10 +4,11 @@ import { JiraTab } from './JiraTab';
 import { ConfluenceTab } from './ConfluenceTab';
 import { ManualTab } from './ManualTab';
 import { SlackTab } from './SlackTab';
+import { GoogleDocsTab } from './GoogleDocsTab';
 import { ManualItemForm } from './ManualItemForm';
 import './ActionItemsView.css';
 
-type TabId = 'all' | 'jira' | 'confluence' | 'manual' | 'slack';
+type TabId = 'all' | 'jira' | 'confluence' | 'manual' | 'slack' | 'googleDocs';
 
 interface ActionItemsViewProps {
   actionItems: ActionItemsResponse | null;
@@ -92,10 +93,12 @@ export function ActionItemsView({
   const confluenceItems = actionItems?.confluence.items || [];
   const manualItems = actionItems?.manual.items || [];
   const slackItems = actionItems?.slack.items || [];
+  const googleDocsItems = actionItems?.googleDocs.items || [];
   const jiraError = actionItems?.jira.error;
   const confluenceError = actionItems?.confluence.error;
   const manualError = actionItems?.manual.error;
   const slackError = actionItems?.slack.error;
+  const googleDocsError = actionItems?.googleDocs.error;
   const totalCount = actionItems?.totalCount || 0;
 
   const tabs: { id: TabId; label: string; count: number }[] = [
@@ -103,6 +106,7 @@ export function ActionItemsView({
     { id: 'jira', label: 'Jira', count: jiraItems.length },
     { id: 'confluence', label: 'Confluence', count: confluenceItems.length },
     { id: 'slack', label: 'Slack', count: slackItems.length },
+    { id: 'googleDocs', label: 'Meeting Notes', count: googleDocsItems.length },
     { id: 'manual', label: 'Manual', count: manualItems.length },
   ];
 
@@ -172,6 +176,12 @@ export function ActionItemsView({
               <SlackTab items={slackItems} error={slackError} />
             </div>
           )}
+          {googleDocsItems.length > 0 && (
+            <div className="action-items-view__section">
+              <h2 className="action-items-view__section-title">Meeting Notes</h2>
+              <GoogleDocsTab items={googleDocsItems} error={googleDocsError} />
+            </div>
+          )}
           {manualItems.length > 0 && (
             <div className="action-items-view__section">
               <h2 className="action-items-view__section-title">Manual</h2>
@@ -186,12 +196,13 @@ export function ActionItemsView({
               />
             </div>
           )}
-          {(jiraError || confluenceError || slackError || manualError) && (
+          {(jiraError || confluenceError || slackError || googleDocsError || manualError) && (
             <div className="action-items-view__errors">
               {[
                 { label: 'Jira', error: jiraError },
                 { label: 'Confluence', error: confluenceError },
                 { label: 'Slack', error: slackError },
+                { label: 'Meeting Notes', error: googleDocsError },
                 { label: 'Manual', error: manualError },
               ].filter(({ error }) => error).map(({ label, error }) => (
                 <div key={label} className="action-items-tab__error">
@@ -200,7 +211,7 @@ export function ActionItemsView({
               ))}
             </div>
           )}
-          {totalCount === 0 && !jiraError && !confluenceError && !slackError && !manualError && (
+          {totalCount === 0 && !jiraError && !confluenceError && !slackError && !googleDocsError && !manualError && (
             <div className="action-items-tab__empty">
               <div className="action-items-tab__empty-icon">*</div>
               <div className="action-items-tab__empty-text">All caught up!</div>
@@ -226,6 +237,10 @@ export function ActionItemsView({
 
       {activeTab === 'slack' && (
         <SlackTab items={slackItems} error={slackError} />
+      )}
+
+      {activeTab === 'googleDocs' && (
+        <GoogleDocsTab items={googleDocsItems} error={googleDocsError} />
       )}
 
       {activeTab === 'manual' && (

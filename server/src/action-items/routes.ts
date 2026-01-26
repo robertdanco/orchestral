@@ -1,14 +1,17 @@
 import { Router, type Request, type Response } from 'express';
-import type { ActionItemsResponse, JiraActionItem, ConfluenceActionItem, ManualActionItem, SlackActionItem } from '@orchestral/shared';
+import type { ActionItemsResponse, JiraActionItem, ConfluenceActionItem, ManualActionItem, SlackActionItem, GoogleDocsActionItem } from '@orchestral/shared';
 import type { Cache } from '../cache.js';
 import type { ConfluenceClient } from '../confluence/client.js';
 import type { ConfluenceCache } from '../confluence/cache.js';
 import type { SlackClient } from '../slack/client.js';
 import type { SlackCache } from '../slack/cache.js';
+import type { GoogleClient } from '../google/client.js';
+import type { GoogleDocsCache } from '../google/cache.js';
 import type { ManualItemsCache } from './manual-cache.js';
 import { detectJiraActions } from './jira-actions.js';
 import { detectConfluenceActions } from './confluence-actions.js';
 import { detectSlackActions } from './slack-actions.js';
+import { detectGoogleDocsActions } from './google-docs-actions.js';
 import { createManualItemsRouter } from './manual-routes.js';
 
 export function createActionItemsRouter(
@@ -17,7 +20,10 @@ export function createActionItemsRouter(
   confluenceCache: ConfluenceCache,
   manualCache: ManualItemsCache,
   slackClient?: SlackClient,
-  slackCache?: SlackCache
+  slackCache?: SlackCache,
+  googleClient?: GoogleClient,
+  googleCache?: GoogleDocsCache,
+  meetingNotesPattern?: string
 ): Router {
   const router = Router();
 
@@ -28,6 +34,7 @@ export function createActionItemsRouter(
   router.post('/refresh', async (_req: Request, res: Response) => {
     jiraCache.clear();
     confluenceCache.clear();
+    if (googleCache) googleCache.clear();
     res.json({ message: 'Action items cache cleared' });
   });
 
@@ -38,12 +45,13 @@ export function createActionItemsRouter(
       confluence: { items: [], count: 0 },
       manual: { items: [], count: 0 },
       slack: { items: [], count: 0 },
+      googleDocs: { items: [], count: 0 },
       totalCount: 0,
       lastRefreshed: new Date().toISOString(),
     };
 
-    // Run Jira, Confluence, Manual, and Slack detection in parallel
-    const [jiraResult, confluenceResult, manualResult, slackResult] = await Promise.allSettled([
+    // Run Jira, Confluence, Manual, Slack, and Google Docs detection in parallel
+    const [jiraResult, confluenceResult, manualResult, slackResult, googleDocsResult] = await Promise.allSettled([
       (async (): Promise<JiraActionItem[]> => {
         const issues = jiraCache.getIssues();
         if (issues.length === 0) {
@@ -70,6 +78,13 @@ export function createActionItemsRouter(
         }
         const currentUser = await slackClient.getCurrentUser();
         return detectSlackActions(slackCache, currentUser.userId);
+      })(),
+      (async (): Promise<GoogleDocsActionItem[]> => {
+        if (!googleClient || !googleCache) {
+          return [];
+        }
+        const pattern = meetingNotesPattern || 'Meeting Notes.*|Transcript.*';
+        return detectGoogleDocsActions(googleCache, pattern);
       })(),
     ]);
 
@@ -105,7 +120,15 @@ export function createActionItemsRouter(
       response.slack.error = slackResult.reason?.message || 'Failed to fetch Slack actions';
     }
 
-    response.totalCount = response.jira.count + response.confluence.count + response.manual.count + response.slack.count;
+    // Process Google Docs result
+    if (googleDocsResult.status === 'fulfilled') {
+      response.googleDocs.items = googleDocsResult.value;
+      response.googleDocs.count = googleDocsResult.value.length;
+    } else {
+      response.googleDocs.error = googleDocsResult.reason?.message || 'Failed to fetch Google Docs actions';
+    }
+
+    response.totalCount = response.jira.count + response.confluence.count + response.manual.count + response.slack.count + response.googleDocs.count;
 
     res.json(response);
   });
