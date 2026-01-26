@@ -1,6 +1,7 @@
 import { JiraItem, JiraItemDetail } from './types.js';
+import type { ICache } from './cache/types.js';
 
-export class Cache {
+export class Cache implements ICache {
   private issues: JiraItem[] = [];
   private issueDetails: Map<string, JiraItemDetail> = new Map();
   private lastRefreshed: Date | null = null;
@@ -34,5 +35,9 @@ export class Cache {
     this.issues = [];
     this.issueDetails.clear();
     this.lastRefreshed = null;
+  }
+
+  isEmpty(): boolean {
+    return this.issues.length === 0 && this.issueDetails.size === 0;
   }
 }

@@ -1,6 +1,7 @@
 import type { SlackChannel, SlackMessage } from '@orchestral/shared';
+import type { ICache } from '../cache/types.js';
 
-export class SlackCache {
+export class SlackCache implements ICache {
   private channels: Map<string, SlackChannel> = new Map();
   private messages: Map<string, SlackMessage[]> = new Map(); // channelId -> messages
   private lastRefreshed: Date | null = null;

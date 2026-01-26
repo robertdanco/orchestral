@@ -13,6 +13,7 @@ import { detectConfluenceActions } from './confluence-actions.js';
 import { detectSlackActions } from './slack-actions.js';
 import { detectGoogleDocsActions } from './google-docs-actions.js';
 import { createManualItemsRouter } from './manual-routes.js';
+import { processResult } from './utils.js';
 
 export function createActionItemsRouter(
   jiraCache: Cache,
@@ -88,45 +89,12 @@ export function createActionItemsRouter(
       })(),
     ]);
 
-    // Process Jira result
-    if (jiraResult.status === 'fulfilled') {
-      response.jira.items = jiraResult.value;
-      response.jira.count = jiraResult.value.length;
-    } else {
-      response.jira.error = jiraResult.reason?.message || 'Failed to fetch Jira actions';
-    }
-
-    // Process Confluence result
-    if (confluenceResult.status === 'fulfilled') {
-      response.confluence.items = confluenceResult.value;
-      response.confluence.count = confluenceResult.value.length;
-    } else {
-      response.confluence.error = confluenceResult.reason?.message || 'Failed to fetch Confluence actions';
-    }
-
-    // Process Manual result
-    if (manualResult.status === 'fulfilled') {
-      response.manual.items = manualResult.value;
-      response.manual.count = manualResult.value.length;
-    } else {
-      response.manual.error = manualResult.reason?.message || 'Failed to fetch manual items';
-    }
-
-    // Process Slack result
-    if (slackResult.status === 'fulfilled') {
-      response.slack.items = slackResult.value;
-      response.slack.count = slackResult.value.length;
-    } else {
-      response.slack.error = slackResult.reason?.message || 'Failed to fetch Slack actions';
-    }
-
-    // Process Google Docs result
-    if (googleDocsResult.status === 'fulfilled') {
-      response.googleDocs.items = googleDocsResult.value;
-      response.googleDocs.count = googleDocsResult.value.length;
-    } else {
-      response.googleDocs.error = googleDocsResult.reason?.message || 'Failed to fetch Google Docs actions';
-    }
+    // Process results
+    processResult(jiraResult, response.jira, 'Failed to fetch Jira actions');
+    processResult(confluenceResult, response.confluence, 'Failed to fetch Confluence actions');
+    processResult(manualResult, response.manual, 'Failed to fetch manual items');
+    processResult(slackResult, response.slack, 'Failed to fetch Slack actions');
+    processResult(googleDocsResult, response.googleDocs, 'Failed to fetch Google Docs actions');
 
     response.totalCount = response.jira.count + response.confluence.count + response.manual.count + response.slack.count + response.googleDocs.count;
 

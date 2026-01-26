@@ -1,6 +1,7 @@
 import type { GoogleDoc } from '@orchestral/shared';
+import type { ICache } from '../cache/types.js';
 
-export class GoogleDocsCache {
+export class GoogleDocsCache implements ICache {
   private documents: Map<string, GoogleDoc> = new Map();
   private lastRefreshed: Date | null = null;
 

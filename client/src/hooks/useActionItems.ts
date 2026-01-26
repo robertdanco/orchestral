@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '../api';
 import type { ActionItemsResponse, CreateManualActionItemInput, UpdateManualActionItemInput, ManualActionItem } from '../types';
+import { useLoadingState } from './useLoadingState';
 
 interface UseActionItemsResult {
   actionItems: ActionItemsResponse | null;
@@ -20,42 +21,31 @@ interface UseActionItemsResult {
 
 export function useActionItems(): UseActionItemsResult {
   const [actionItems, setActionItems] = useState<ActionItemsResponse | null>(null);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const hasLoadedOnce = useRef(false);
+  const { isInitialLoad, isRefreshing, loading, error, startLoading, finishLoading, setError } = useLoadingState();
 
   const fetchActionItems = useCallback(async () => {
     try {
-      if (hasLoadedOnce.current) {
-        setIsRefreshing(true);
-      } else {
-        setIsInitialLoad(true);
-      }
-      setError(null);
+      startLoading();
       const response = await api.getActionItems();
       setActionItems(response);
-      hasLoadedOnce.current = true;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       setActionItems(null);
     } finally {
-      setIsInitialLoad(false);
-      setIsRefreshing(false);
+      finishLoading();
     }
-  }, []);
+  }, [startLoading, finishLoading, setError]);
 
   const refresh = useCallback(async () => {
     try {
-      setIsRefreshing(true);
-      setError(null);
+      startLoading();
       await api.refreshActionItems();
       await fetchActionItems();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
-      setIsRefreshing(false);
+      finishLoading();
     }
-  }, [fetchActionItems]);
+  }, [fetchActionItems, startLoading, finishLoading, setError]);
 
   // Manual item mutations
   const createManualItem = useCallback(async (input: CreateManualActionItemInput): Promise<ManualActionItem> => {
@@ -91,7 +81,6 @@ export function useActionItems(): UseActionItemsResult {
     fetchActionItems();
   }, [fetchActionItems]);
 
-  const loading = isInitialLoad || isRefreshing;
   const totalCount = actionItems?.totalCount ?? 0;
 
   return {

@@ -4,40 +4,6 @@
   max-width: 900px;
 }
 
-/* MD3 Empty State */
-.actions-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--md-sys-spacing-16);
-  text-align: center;
-}
-
-.actions-empty__icon {
-  width: 72px;
-  height: 72px;
-  border-radius: var(--md-sys-shape-corner-full);
-  background: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-primary);
-  font-size: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: var(--md-sys-spacing-4);
-}
-
-.actions-empty__text {
-  font: var(--md-sys-typescale-headline-small);
-  color: var(--md-sys-color-on-surface);
-}
-
-.actions-empty__subtext {
-  font: var(--md-sys-typescale-body-medium);
-  color: var(--md-sys-color-outline);
-  margin-top: var(--md-sys-spacing-2);
-}
-
 /* MD3 Action Section */
 .action-section {
   margin-bottom: var(--md-sys-spacing-6);
@@ -143,20 +109,6 @@
   .actions-view {
     padding: var(--md-sys-spacing-3);
     max-width: 100%;
-  }
-
-  .actions-empty {
-    padding: var(--md-sys-spacing-8);
-  }
-
-  .actions-empty__icon {
-    width: 56px;
-    height: 56px;
-    font-size: 28px;
-  }
-
-  .actions-empty__text {
-    font: var(--md-sys-typescale-title-large);
   }
 
   .action-section__title {

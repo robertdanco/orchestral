@@ -263,8 +263,20 @@ To add a new action item source (like Manual items):
 5. Add section to `Promise.allSettled` in `/api/action-items` response aggregation
 6. Add client API methods, hook mutations, and view components (Tab + Form pattern)
 
+## Shared Utilities
+
+### Client
+- `useLoadingState` hook (`client/src/hooks/useLoadingState.ts`) - Shared loading state logic with `startLoading()`, `finishLoading()`, `setError()` controls; used by all data-fetching hooks
+- `EmptyState` component (`client/src/components/EmptyState.tsx`) - Reusable empty state with icon, title, subtitle; accepts `EmptyStateConfig` type
+- `ActionItemsTab` generic component (`client/src/views/ActionItemsView/ActionItemsTab.tsx`) - Generic tab component; source-specific tabs are thin wrappers passing config
+
+### Server
+- `ICache` interface (`server/src/cache/types.ts`) - Common interface for all cache classes: `getLastRefreshed()`, `clear()`, `isEmpty()`
+- `processResult` helper (`server/src/action-items/utils.ts`) - Processes `Promise.allSettled` results into action item response sections
+
 ## Gotchas
 
+- Before removing CSS classes, verify they're used in TSX files with Grep - some CSS may be dead code
 - Manual action items persist to `data/manual-items.json` (file-based storage); JSON files are gitignored but the directory has `.gitkeep`
 - When aggregating from multiple sources (Jira + Confluence + Slack + Manual), use `Promise.allSettled` to handle partial failures gracefully
 - Slack integration is optional; when `SLACK_BOT_TOKEN` is not set, Slack endpoints return empty arrays gracefully

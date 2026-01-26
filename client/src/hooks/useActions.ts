@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '../api';
 import type { ActionRequiredResult } from '../types';
+import { useLoadingState } from './useLoadingState';
 
 interface UseActionsResult {
   actions: ActionRequiredResult | null;
@@ -13,42 +14,30 @@ interface UseActionsResult {
 
 export function useActions(): UseActionsResult {
   const [actions, setActions] = useState<ActionRequiredResult | null>(null);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const hasLoadedOnce = useRef(false);
+  const { isInitialLoad, isRefreshing, loading, error, startLoading, finishLoading, setError } = useLoadingState();
 
   const fetchActions = useCallback(async () => {
     try {
-      if (hasLoadedOnce.current) {
-        setIsRefreshing(true);
-      } else {
-        setIsInitialLoad(true);
-      }
-      setError(null);
+      startLoading();
       const data = await api.getActions();
       setActions(data);
-      hasLoadedOnce.current = true;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       setActions(null);
     } finally {
-      setIsInitialLoad(false);
-      setIsRefreshing(false);
+      finishLoading();
     }
-  }, []);
+  }, [startLoading, finishLoading, setError]);
 
   const refresh = useCallback(async () => {
-    setIsRefreshing(true);
+    startLoading();
     await api.refresh();
     await fetchActions();
-  }, [fetchActions]);
+  }, [fetchActions, startLoading]);
 
   useEffect(() => {
     fetchActions();
   }, [fetchActions]);
-
-  const loading = isInitialLoad || isRefreshing;
 
   return { actions, loading, isInitialLoad, isRefreshing, error, refresh };
 }

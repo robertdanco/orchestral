@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '../api';
 import type { JiraItem } from '../types';
+import { useLoadingState } from './useLoadingState';
 
 interface UseIssuesResult {
   issues: JiraItem[];
@@ -14,50 +15,37 @@ interface UseIssuesResult {
 
 export function useIssues(): UseIssuesResult {
   const [issues, setIssues] = useState<JiraItem[]>([]);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
-  const hasLoadedOnce = useRef(false);
+  const { isInitialLoad, isRefreshing, loading, error, startLoading, finishLoading, setError } = useLoadingState();
 
   const fetchIssues = useCallback(async () => {
     try {
-      if (hasLoadedOnce.current) {
-        setIsRefreshing(true);
-      } else {
-        setIsInitialLoad(true);
-      }
-      setError(null);
+      startLoading();
       const response = await api.getIssues();
       setIssues(response.issues);
       setLastRefreshed(response.lastRefreshed ? new Date(response.lastRefreshed) : null);
-      hasLoadedOnce.current = true;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       setIssues([]);
     } finally {
-      setIsInitialLoad(false);
-      setIsRefreshing(false);
+      finishLoading();
     }
-  }, []);
+  }, [startLoading, finishLoading, setError]);
 
   const refresh = useCallback(async () => {
     try {
-      setIsRefreshing(true);
-      setError(null);
+      startLoading();
       await api.refresh();
       await fetchIssues();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
-      setIsRefreshing(false);
+      finishLoading();
     }
-  }, [fetchIssues]);
+  }, [fetchIssues, startLoading, finishLoading, setError]);
 
   useEffect(() => {
     fetchIssues();
   }, [fetchIssues]);
-
-  const loading = isInitialLoad || isRefreshing;
 
   return { issues, loading, isInitialLoad, isRefreshing, error, lastRefreshed, refresh };
 }

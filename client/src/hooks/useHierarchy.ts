@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '../api';
 import type { HierarchicalJiraItem } from '../types';
+import { useLoadingState } from './useLoadingState';
 
 interface UseHierarchyResult {
   hierarchy: HierarchicalJiraItem[];
@@ -13,42 +14,30 @@ interface UseHierarchyResult {
 
 export function useHierarchy(): UseHierarchyResult {
   const [hierarchy, setHierarchy] = useState<HierarchicalJiraItem[]>([]);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const hasLoadedOnce = useRef(false);
+  const { isInitialLoad, isRefreshing, loading, error, startLoading, finishLoading, setError } = useLoadingState();
 
   const fetchHierarchy = useCallback(async () => {
     try {
-      if (hasLoadedOnce.current) {
-        setIsRefreshing(true);
-      } else {
-        setIsInitialLoad(true);
-      }
-      setError(null);
+      startLoading();
       const data = await api.getHierarchy();
       setHierarchy(data);
-      hasLoadedOnce.current = true;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       setHierarchy([]);
     } finally {
-      setIsInitialLoad(false);
-      setIsRefreshing(false);
+      finishLoading();
     }
-  }, []);
+  }, [startLoading, finishLoading, setError]);
 
   const refresh = useCallback(async () => {
-    setIsRefreshing(true);
+    startLoading();
     await api.refresh();
     await fetchHierarchy();
-  }, [fetchHierarchy]);
+  }, [fetchHierarchy, startLoading]);
 
   useEffect(() => {
     fetchHierarchy();
   }, [fetchHierarchy]);
-
-  const loading = isInitialLoad || isRefreshing;
 
   return { hierarchy, loading, isInitialLoad, isRefreshing, error, refresh };
 }

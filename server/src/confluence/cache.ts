@@ -1,6 +1,7 @@
 import type { ConfluenceSpace, ConfluencePage } from '@orchestral/shared';
+import type { ICache } from '../cache/types.js';
 
-export class ConfluenceCache {
+export class ConfluenceCache implements ICache {
   private spaces: ConfluenceSpace[] = [];
   private pages: ConfluencePage[] = [];
   private pageDetails: Map<string, ConfluencePage> = new Map();

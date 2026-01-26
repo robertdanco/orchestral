@@ -1,4 +1,5 @@
 import type { JiraActionItem, ConfluenceActionItem, ManualActionItem, SlackActionItem, GoogleDocsActionItem, ActionItem } from '../../types';
+import type { EmptyStateConfig } from '../../components/EmptyState';
 
 export const JIRA_CATEGORY_LABELS: Record<JiraActionItem['category'], string> = {
   blocker: 'Blockers',
@@ -64,3 +65,28 @@ export function groupByCategory<T extends { category: string }>(
     return acc;
   }, {} as Record<string, T[]>);
 }
+
+// Empty state configurations for each source type
+export const JIRA_EMPTY_STATE: EmptyStateConfig = {
+  icon: 'J',
+  title: 'No Jira action items',
+  subtitle: 'All Jira issues are in good shape',
+};
+
+export const CONFLUENCE_EMPTY_STATE: EmptyStateConfig = {
+  icon: 'C',
+  title: 'No Confluence action items',
+  subtitle: 'No comments require your attention',
+};
+
+export const SLACK_EMPTY_STATE: EmptyStateConfig = {
+  icon: '#',
+  title: 'No Slack action items',
+  subtitle: 'No mentions or thread replies require your attention',
+};
+
+export const GOOGLE_DOCS_EMPTY_STATE: EmptyStateConfig = {
+  icon: '📝',
+  title: 'No meeting note action items',
+  subtitle: 'Action items from meeting notes will appear here',
+};
