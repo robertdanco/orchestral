@@ -1,3 +1,4 @@
+import { Logo } from './Logo';
 import './Header.css';
 
 interface HeaderProps {
@@ -16,7 +17,10 @@ export function Header({ lastRefreshed, loading, onRefresh }: HeaderProps): JSX.
 
   return (
     <header className="header">
-      <h1 className="header__title">Orchestral</h1>
+      <div className="header__brand">
+        <Logo size={36} animated />
+        <h1 className="header__title">Orchestral</h1>
+      </div>
       <div className="header__actions">
         {lastRefreshed && (
           <span className="header__refreshed">

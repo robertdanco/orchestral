@@ -53,3 +53,53 @@
   color: var(--md-sys-color-outline);
   font: var(--md-sys-typescale-body-medium);
 }
+
+/* ===== Responsive Styles ===== */
+
+/* Mobile (< 768px) - Vertical stack */
+@media (max-width: 767px) {
+  .kanban {
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - 100px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    gap: var(--md-sys-spacing-3);
+  }
+
+  .kanban__column {
+    flex: none;
+    min-width: 100%;
+    max-width: 100%;
+    min-height: auto;
+  }
+
+  .kanban__column-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--md-sys-color-surface-container);
+    border-radius: var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large) 0 0;
+  }
+
+  .kanban__column-content {
+    max-height: none;
+    padding: var(--md-sys-spacing-2);
+  }
+
+  .kanban__column-title {
+    font: var(--md-sys-typescale-title-small);
+  }
+}
+
+/* Tablet (768px - 1199px) */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .kanban__column {
+    min-width: 240px;
+    max-width: 300px;
+  }
+
+  .kanban__column-header {
+    padding: var(--md-sys-spacing-2) var(--md-sys-spacing-3);
+  }
+}

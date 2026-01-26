@@ -103,3 +103,46 @@
 .chat-view__error button:hover {
   background: var(--md-sys-color-error-container);
 }
+
+/* ===== Responsive Styles ===== */
+
+/* Mobile (< 768px) */
+@media (max-width: 767px) {
+  .chat-view {
+    height: calc(100vh - 56px);
+  }
+
+  .chat-view__messages {
+    padding: var(--md-sys-spacing-3);
+    max-width: 100%;
+  }
+
+  .chat-view__empty {
+    padding: var(--md-sys-spacing-6) var(--md-sys-spacing-3);
+  }
+
+  .chat-view__empty-title {
+    font: var(--md-sys-typescale-title-large);
+  }
+
+  .chat-view__empty-description {
+    font: var(--md-sys-typescale-body-medium);
+    max-width: 100%;
+  }
+
+  .chat-view__suggestions {
+    max-width: 100%;
+  }
+
+  .chat-view__suggestion {
+    padding: var(--md-sys-spacing-2) var(--md-sys-spacing-3);
+    font: var(--md-sys-typescale-label-medium);
+  }
+}
+
+/* Tablet (768px - 1199px) */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .chat-view__messages {
+    max-width: 700px;
+  }
+}

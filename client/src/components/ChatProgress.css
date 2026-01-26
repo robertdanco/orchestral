@@ -1,27 +1,22 @@
+/* MD3 Chat Progress */
 .chat-progress {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: 16px;
-  background: var(--color-bg-tertiary);
-  border-radius: 8px;
-  margin-bottom: 12px;
+  gap: var(--md-sys-spacing-3);
+  padding: var(--md-sys-spacing-4);
+  background: var(--md-sys-color-surface-container);
+  border-radius: var(--md-sys-shape-corner-large);
+  margin-bottom: var(--md-sys-spacing-3);
 }
 
 .chat-progress__spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--color-border);
-  border-top-color: var(--color-primary);
-  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--md-sys-color-outline-variant);
+  border-top-color: var(--md-sys-color-primary);
+  border-radius: var(--md-sys-shape-corner-full);
   animation: spin 1s linear infinite;
   flex-shrink: 0;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 .chat-progress__content {
@@ -29,27 +24,53 @@
 }
 
 .chat-progress__phase {
-  font-size: 14px;
-  color: var(--color-text-primary);
-  font-weight: 500;
+  font: var(--md-sys-typescale-body-medium);
+  color: var(--md-sys-color-on-surface);
 }
 
 .chat-progress__sources {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
+  gap: var(--md-sys-spacing-2);
+  margin-top: var(--md-sys-spacing-2);
 }
 
+/* MD3 Source Chip */
 .chat-progress__source {
-  font-size: 12px;
-  padding: 4px 8px;
-  background: var(--color-white);
-  border-radius: 4px;
-  color: var(--color-text-muted);
+  font: var(--md-sys-typescale-label-medium);
+  padding: 6px 12px;
+  background: var(--md-sys-color-surface-container-lowest);
+  border-radius: var(--md-sys-shape-corner-small);
+  color: var(--md-sys-color-outline);
 }
 
 .chat-progress__source--completed {
   color: var(--color-done-text);
   background: var(--color-done-bg);
+}
+
+/* ===== Responsive Styles ===== */
+
+/* Mobile (< 768px) */
+@media (max-width: 767px) {
+  .chat-progress {
+    padding: var(--md-sys-spacing-3);
+    gap: var(--md-sys-spacing-2);
+    margin-bottom: var(--md-sys-spacing-2);
+  }
+
+  .chat-progress__spinner {
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
+  }
+
+  .chat-progress__phase {
+    font: var(--md-sys-typescale-body-small);
+  }
+
+  .chat-progress__source {
+    font: var(--md-sys-typescale-label-small);
+    padding: 4px 8px;
+  }
 }

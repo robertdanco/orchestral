@@ -120,6 +120,10 @@
   --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
   --md-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
 
+  /* ===== Common Transitions ===== */
+  --transition-fast: var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  --transition-medium: var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+
   /* ===== MD3 Spacing Scale (4dp base) ===== */
   --md-sys-spacing-1: 4px;
   --md-sys-spacing-2: 8px;
@@ -151,6 +155,13 @@
   --color-white: #FFFFFF;
   --color-status-default-bg: var(--md-sys-color-surface-container-high);
   --color-status-default-text: var(--md-sys-color-on-surface-variant);
+}
+
+/* ===== Global Spinner Animation ===== */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 * {
@@ -229,4 +240,40 @@ button:focus-visible {
 
 .error button:hover {
   background: var(--color-primary-hover);
+}
+
+/* ===== Responsive Layout Variables ===== */
+:root {
+  --layout-sidebar-width: 240px;
+  --layout-detail-panel-width: 400px;
+}
+
+/* ===== Responsive Breakpoints ===== */
+
+/* Mobile (< 768px) */
+@media (max-width: 767px) {
+  :root {
+    --layout-sidebar-width: 280px;
+    --layout-detail-panel-width: 100%;
+  }
+
+  .main {
+    padding: var(--md-sys-spacing-3);
+  }
+
+  .main--with-panel {
+    margin-right: 0;
+  }
+}
+
+/* Tablet (768px - 1199px) */
+@media (min-width: 768px) and (max-width: 1199px) {
+  :root {
+    --layout-sidebar-width: 64px;
+    --layout-detail-panel-width: 360px;
+  }
+
+  .main--with-panel {
+    margin-right: 360px;
+  }
 }

@@ -1,131 +1,140 @@
+/* MD3 Confluence View */
 .confluence-view {
   display: flex;
   height: 100%;
-  gap: 16px;
+  gap: var(--md-sys-spacing-4);
 }
 
 .confluence-tree {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  padding: var(--md-sys-spacing-4);
 }
 
-.confluence-empty {
-  text-align: center;
-  padding: 48px;
-  color: var(--color-text-muted);
-}
-
+.confluence-empty,
 .confluence-loading {
   text-align: center;
-  padding: 48px;
-  color: var(--color-text-muted);
+  padding: var(--md-sys-spacing-12);
+  color: var(--md-sys-color-outline);
+  font: var(--md-sys-typescale-body-large);
 }
 
-/* Space Node */
+/* MD3 Space Node */
 .confluence-space {
-  margin-bottom: 16px;
+  margin-bottom: var(--md-sys-spacing-4);
 }
 
 .confluence-space__header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px;
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
+  gap: var(--md-sys-spacing-2);
+  padding: var(--md-sys-spacing-3);
+  background: var(--md-sys-color-surface-container-low);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-medium);
   cursor: pointer;
   width: 100%;
   text-align: left;
+  transition: background var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
 }
 
 .confluence-space__header:hover {
-  background: var(--color-bg-tertiary);
+  background: var(--md-sys-color-surface-container);
 }
 
 .confluence-space__toggle {
   font-size: 10px;
-  color: var(--color-text-muted);
+  color: var(--md-sys-color-outline);
   width: 16px;
+  transition: transform var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
 }
 
 .confluence-space__icon {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-primary);
-  color: var(--color-white);
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 600;
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-radius: var(--md-sys-shape-corner-small);
+  font: var(--md-sys-typescale-label-medium);
 }
 
 .confluence-space__name {
   flex: 1;
-  font-weight: 500;
+  font: var(--md-sys-typescale-title-small);
 }
 
 .confluence-space__count {
-  font-size: 12px;
-  color: var(--color-text-muted);
-  background: var(--color-bg-tertiary);
-  padding: 2px 8px;
-  border-radius: 12px;
+  font: var(--md-sys-typescale-label-medium);
+  color: var(--md-sys-color-outline);
+  background: var(--md-sys-color-surface-container);
+  padding: 2px 10px;
+  border-radius: var(--md-sys-shape-corner-full);
 }
 
 .confluence-space__pages {
-  margin-left: 24px;
-  margin-top: 4px;
+  margin-left: var(--md-sys-spacing-6);
+  margin-top: var(--md-sys-spacing-1);
 }
 
-/* Page Node */
+/* MD3 Page Node */
 .confluence-page {
-  margin-left: 8px;
+  margin-left: var(--md-sys-spacing-2);
 }
 
 .confluence-page__row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px;
-  border-radius: 4px;
+  gap: var(--md-sys-spacing-2);
+  padding: var(--md-sys-spacing-2);
+  border-radius: var(--md-sys-shape-corner-small);
   cursor: pointer;
+  transition: background var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
 }
 
 .confluence-page__row:hover {
-  background: var(--color-bg-tertiary);
+  background: var(--md-sys-color-surface-container);
 }
 
 .confluence-page__row--selected {
-  background: var(--color-primary-light);
+  background: var(--md-sys-color-primary-container);
 }
 
 .confluence-page__toggle {
   background: none;
   border: none;
   cursor: pointer;
-  width: 16px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--md-sys-shape-corner-full);
   font-size: 10px;
-  color: var(--color-text-muted);
+  color: var(--md-sys-color-outline);
   padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.confluence-page__toggle:hover {
+  background: var(--md-sys-color-surface-container-high);
 }
 
 .confluence-page__spacer {
-  width: 16px;
+  width: 20px;
 }
 
 .confluence-page__icon {
-  font-size: 14px;
-  color: var(--color-text-muted);
+  font-size: 16px;
+  color: var(--md-sys-color-outline);
 }
 
 .confluence-page__title {
   flex: 1;
-  font-size: 14px;
-  color: var(--color-text-primary);
+  font: var(--md-sys-typescale-body-medium);
+  color: var(--md-sys-color-on-surface);
   text-align: left;
   background: none;
   border: none;
@@ -134,39 +143,38 @@
 }
 
 .confluence-page__title:hover {
-  color: var(--color-primary);
+  color: var(--md-sys-color-primary);
 }
 
 .confluence-page__children {
   margin-top: 2px;
 }
 
-/* Preview Panel */
+/* MD3 Preview Panel */
 .confluence-preview {
   width: 400px;
-  background: var(--color-white);
-  border-left: 1px solid var(--color-border);
+  background: var(--md-sys-color-surface-container-lowest);
+  border-left: 1px solid var(--md-sys-color-outline-variant);
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
 .confluence-preview__header {
-  padding: 16px;
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--md-sys-spacing-4);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .confluence-preview__title {
-  font-size: 16px;
-  font-weight: 600;
+  font: var(--md-sys-typescale-title-medium);
 }
 
 .confluence-preview__link {
-  font-size: 12px;
-  color: var(--color-primary);
+  font: var(--md-sys-typescale-body-small);
+  color: var(--md-sys-color-primary);
   text-decoration: none;
 }
 
@@ -176,36 +184,36 @@
 
 .confluence-preview__content {
   flex: 1;
-  padding: 16px;
+  padding: var(--md-sys-spacing-4);
   overflow-y: auto;
 }
 
 .confluence-preview__meta {
-  margin-bottom: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--color-border-light);
+  margin-bottom: var(--md-sys-spacing-4);
+  padding-bottom: var(--md-sys-spacing-4);
+  border-bottom: 1px solid var(--md-sys-color-surface-container-high);
 }
 
 .confluence-preview__meta-item {
   display: flex;
-  gap: 8px;
-  font-size: 13px;
-  margin-bottom: 8px;
+  gap: var(--md-sys-spacing-2);
+  font: var(--md-sys-typescale-body-small);
+  margin-bottom: var(--md-sys-spacing-2);
 }
 
 .confluence-preview__meta-label {
-  color: var(--color-text-muted);
+  color: var(--md-sys-color-outline);
   min-width: 80px;
 }
 
 .confluence-preview__meta-value {
-  color: var(--color-text-primary);
+  color: var(--md-sys-color-on-surface);
 }
 
 .confluence-preview__body {
-  font-size: 14px;
+  font: var(--md-sys-typescale-body-medium);
   line-height: 1.6;
-  color: var(--color-text-secondary);
+  color: var(--md-sys-color-on-surface-variant);
 }
 
 .confluence-preview__empty {
@@ -213,5 +221,80 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: var(--color-text-muted);
+  color: var(--md-sys-color-outline);
+  font: var(--md-sys-typescale-body-medium);
+}
+
+/* ===== Responsive Styles ===== */
+
+/* Mobile (< 768px) - Stack tree above preview */
+@media (max-width: 767px) {
+  .confluence-view {
+    flex-direction: column;
+    height: auto;
+    min-height: 100%;
+  }
+
+  .confluence-tree {
+    flex: none;
+    height: 40vh;
+    min-height: 200px;
+    max-height: 50vh;
+    padding: var(--md-sys-spacing-3);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .confluence-preview {
+    width: 100%;
+    flex: 1;
+    min-height: 50vh;
+    border-left: none;
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .confluence-preview__header {
+    padding: var(--md-sys-spacing-3);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--md-sys-spacing-2);
+  }
+
+  .confluence-preview__title {
+    font: var(--md-sys-typescale-title-small);
+  }
+
+  .confluence-preview__content {
+    padding: var(--md-sys-spacing-3);
+  }
+
+  .confluence-space__header {
+    padding: var(--md-sys-spacing-2);
+  }
+
+  .confluence-space__name {
+    font: var(--md-sys-typescale-body-medium);
+  }
+
+  .confluence-space__pages {
+    margin-left: var(--md-sys-spacing-3);
+  }
+
+  .confluence-page {
+    margin-left: var(--md-sys-spacing-1);
+  }
+}
+
+/* Tablet (768px - 1199px) */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .confluence-preview {
+    width: 320px;
+  }
+
+  .confluence-preview__header {
+    padding: var(--md-sys-spacing-3);
+  }
+
+  .confluence-preview__content {
+    padding: var(--md-sys-spacing-3);
+  }
 }

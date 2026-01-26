@@ -108,3 +108,104 @@
 .sidebar__item--active:hover {
   background: var(--md-sys-color-primary-container);
 }
+
+/* ===== Responsive Styles ===== */
+
+/* Mobile (< 768px) - Hidden by default, slide-in overlay */
+@media (max-width: 767px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--layout-sidebar-width);
+    height: 100vh;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized);
+  }
+
+  .sidebar--open {
+    transform: translateX(0);
+  }
+
+  .sidebar__backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.32);
+    z-index: 199;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+  }
+
+  .sidebar__backdrop--visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .sidebar__section-header {
+    padding: var(--md-sys-spacing-3);
+  }
+
+  .sidebar__item {
+    margin-left: var(--md-sys-spacing-4);
+    padding: var(--md-sys-spacing-2) var(--md-sys-spacing-3);
+  }
+}
+
+/* Tablet (768px - 1199px) - Collapsed, expand on hover */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .sidebar {
+    width: 64px;
+    overflow: visible;
+    transition: width var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized);
+  }
+
+  .sidebar:hover {
+    width: 240px;
+    box-shadow: var(--md-sys-elevation-level3);
+  }
+
+  .sidebar__section-header {
+    padding: var(--md-sys-spacing-3);
+    justify-content: center;
+  }
+
+  .sidebar:not(:hover) .sidebar__section-title,
+  .sidebar:not(:hover) .sidebar__section-badge,
+  .sidebar:not(:hover) .sidebar__section-arrow {
+    display: none;
+  }
+
+  .sidebar:not(:hover) .sidebar__section-content {
+    display: none;
+  }
+
+  .sidebar__item {
+    position: relative;
+    margin-left: var(--md-sys-spacing-3);
+    padding: var(--md-sys-spacing-2) var(--md-sys-spacing-3);
+  }
+
+  .sidebar:not(:hover) .sidebar__item {
+    justify-content: center;
+    margin-left: 0;
+    padding: var(--md-sys-spacing-3);
+  }
+
+  .sidebar:not(:hover) .sidebar__item span:not(.sidebar__item-badge) {
+    display: none;
+  }
+
+  .sidebar:not(:hover) .sidebar__item-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 16px;
+    padding: 2px 4px;
+    font-size: 10px;
+  }
+}
