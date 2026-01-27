@@ -1,5 +1,6 @@
-import type { JiraItem, JiraActionItem, ActionRequiredResult } from '@orchestral/shared';
-import { detectActionRequired, DEFAULT_ACTION_CONFIG, type ActionConfig } from '../actions.js';
+import type { JiraItem, JiraActionItem, ActionRequiredResult, JiraActionSettings } from '@orchestral/shared';
+import { DEFAULT_JIRA_ACTION_SETTINGS } from '@orchestral/shared';
+import { detectActionRequired } from '../actions.js';
 import { sortActionItems } from './utils.js';
 
 type JiraActionCategory = JiraActionItem['category'];
@@ -33,9 +34,9 @@ function mapToJiraActionItem(
 
 export function detectJiraActions(
   issues: JiraItem[],
-  config: ActionConfig = DEFAULT_ACTION_CONFIG
+  settings: JiraActionSettings = DEFAULT_JIRA_ACTION_SETTINGS
 ): JiraActionItem[] {
-  const result: ActionRequiredResult = detectActionRequired(issues, config);
+  const result: ActionRequiredResult = detectActionRequired(issues, settings);
   const actionItems: JiraActionItem[] = [];
 
   // Map each category to JiraActionItem format

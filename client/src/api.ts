@@ -12,6 +12,8 @@ import type {
   ManualActionItem,
   CreateManualActionItemInput,
   UpdateManualActionItemInput,
+  JiraActionSettings,
+  UpdateJiraActionSettingsInput,
 } from './types';
 
 export class ApiError extends Error {
@@ -131,5 +133,22 @@ export const api = {
 
   async uncompleteManualActionItem(id: string): Promise<ManualActionItem> {
     return fetchJson(`/api/action-items/manual/${id}/incomplete`, { method: 'POST' });
+  },
+
+  // Jira Settings API
+  async getJiraSettings(): Promise<JiraActionSettings> {
+    return fetchJson('/api/action-items/jira-settings');
+  },
+
+  async updateJiraSettings(input: UpdateJiraActionSettingsInput): Promise<JiraActionSettings> {
+    return fetchJson('/api/action-items/jira-settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    });
+  },
+
+  async resetJiraSettings(): Promise<JiraActionSettings> {
+    return fetchJson('/api/action-items/jira-settings/reset', { method: 'POST' });
   },
 };

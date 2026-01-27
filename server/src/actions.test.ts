@@ -1,11 +1,23 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { detectActionRequired, ActionRequiredItem, ActionConfig } from './actions.js';
-import { JiraItem } from './types.js';
+import { detectActionRequired, type ActionConfig } from './actions.js';
+import type { JiraItem } from './types.js';
 
 describe('detectActionRequired', () => {
   const config: ActionConfig = {
     staleDays: 5,
     requireEstimates: true,
+    enabledCategories: {
+      blocker: true,
+      blocked: true,
+      stale: true,
+      missingDetails: true,
+      unassigned: true,
+      unestimated: true,
+    },
+    statusMappings: {
+      staleStatusCategories: ['inprogress'],
+      unassignedStatusCategories: ['todo', 'inprogress'],
+    },
   };
 
   const makeItem = (overrides: Partial<JiraItem>): JiraItem => ({
@@ -114,5 +126,95 @@ describe('detectActionRequired', () => {
     const result = detectActionRequired(items, config);
 
     expect(result.unestimated).toHaveLength(0);
+  });
+
+  describe('enabled categories', () => {
+    it('skips blocked detection when category is disabled', () => {
+      const disabledConfig: ActionConfig = {
+        ...config,
+        enabledCategories: { ...config.enabledCategories, blocked: false },
+      };
+      const items = [makeItem({ blocked: true, blockedReason: 'Waiting on API' })];
+      const result = detectActionRequired(items, disabledConfig);
+
+      expect(result.blocked).toHaveLength(0);
+    });
+
+    it('skips stale detection when category is disabled', () => {
+      const disabledConfig: ActionConfig = {
+        ...config,
+        enabledCategories: { ...config.enabledCategories, stale: false },
+      };
+      const items = [makeItem({ updated: '2024-01-10T00:00:00Z' })];
+      const result = detectActionRequired(items, disabledConfig);
+
+      expect(result.stale).toHaveLength(0);
+    });
+
+    it('skips unassigned detection when category is disabled', () => {
+      const disabledConfig: ActionConfig = {
+        ...config,
+        enabledCategories: { ...config.enabledCategories, unassigned: false },
+      };
+      const items = [makeItem({ assignee: null })];
+      const result = detectActionRequired(items, disabledConfig);
+
+      expect(result.unassigned).toHaveLength(0);
+    });
+
+    it('skips unestimated detection when category is disabled', () => {
+      const disabledConfig: ActionConfig = {
+        ...config,
+        enabledCategories: { ...config.enabledCategories, unestimated: false },
+      };
+      const items = [makeItem({ estimate: null })];
+      const result = detectActionRequired(items, disabledConfig);
+
+      expect(result.unestimated).toHaveLength(0);
+    });
+  });
+
+  describe('status mappings', () => {
+    it('detects stale items in todo status when configured', () => {
+      const todoStaleConfig: ActionConfig = {
+        ...config,
+        statusMappings: {
+          ...config.statusMappings,
+          staleStatusCategories: ['todo'],
+        },
+      };
+      const items = [makeItem({ statusCategory: 'todo', updated: '2024-01-10T00:00:00Z' })];
+      const result = detectActionRequired(items, todoStaleConfig);
+
+      expect(result.stale).toHaveLength(1);
+    });
+
+    it('skips stale detection for statuses not in mapping', () => {
+      // Config only checks inprogress for stale
+      const items = [makeItem({ statusCategory: 'todo', updated: '2024-01-10T00:00:00Z' })];
+      const result = detectActionRequired(items, config);
+
+      expect(result.stale).toHaveLength(0);
+    });
+
+    it('detects unassigned only in configured status categories', () => {
+      const inprogressOnlyConfig: ActionConfig = {
+        ...config,
+        statusMappings: {
+          ...config.statusMappings,
+          unassignedStatusCategories: ['inprogress'],
+        },
+      };
+
+      // Todo items without assignee should NOT be flagged
+      const todoItems = [makeItem({ statusCategory: 'todo', assignee: null })];
+      const todoResult = detectActionRequired(todoItems, inprogressOnlyConfig);
+      expect(todoResult.unassigned).toHaveLength(0);
+
+      // Inprogress items without assignee SHOULD be flagged
+      const inprogressItems = [makeItem({ statusCategory: 'inprogress', assignee: null })];
+      const inprogressResult = detectActionRequired(inprogressItems, inprogressOnlyConfig);
+      expect(inprogressResult.unassigned).toHaveLength(1);
+    });
   });
 });

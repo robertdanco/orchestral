@@ -22,6 +22,7 @@ import { GoogleDocsCache } from './google/cache.js';
 import { GoogleDocsSource } from './chat/sources/google-docs.js';
 import { createActionItemsRouter } from './action-items/routes.js';
 import { ManualItemsCache } from './action-items/manual-cache.js';
+import { JiraSettingsCache } from './action-items/jira-settings-cache.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -67,6 +68,10 @@ if (process.env.JIRA_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN
   const manualItemsCache = new ManualItemsCache();
   console.log('Manual Items cache initialized');
 
+  // Initialize Jira Settings cache (file-based persistence)
+  const jiraSettingsCache = new JiraSettingsCache();
+  console.log('Jira Settings cache initialized');
+
   // Initialize Slack client and cache if token is provided
   let slackClient: SlackClient | undefined;
   let slackCache: SlackCache | undefined;
@@ -106,6 +111,7 @@ if (process.env.JIRA_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN
     confluenceClient,
     confluenceCache,
     manualItemsCache,
+    jiraSettingsCache,
     slackClient,
     slackCache,
     googleClient,

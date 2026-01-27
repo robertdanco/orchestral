@@ -33,6 +33,10 @@ export type {
   UpdateManualActionItemInput,
   ConfluenceUser,
   ConfluenceComment,
+  // Jira Settings types
+  JiraActionCategory,
+  JiraActionSettings,
+  UpdateJiraActionSettingsInput,
   // Google types
   GoogleDoc,
   ParsedActionItem,
@@ -43,4 +47,4 @@ export type {
   SlackReaction,
   SlackUser,
 } from '@orchestral/shared';
-export { isValidJiraItem } from '@orchestral/shared';
+export { isValidJiraItem, DEFAULT_JIRA_ACTION_SETTINGS, JIRA_ACTION_CATEGORY_LABELS } from '@orchestral/shared';

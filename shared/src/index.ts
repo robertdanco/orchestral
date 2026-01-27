@@ -1,5 +1,16 @@
 // Shared types for Orchestral
 
+// Re-export Jira Settings types
+export type {
+  JiraActionCategory,
+  JiraActionSettings,
+  UpdateJiraActionSettingsInput,
+} from './jira-settings.js';
+export {
+  DEFAULT_JIRA_ACTION_SETTINGS,
+  JIRA_ACTION_CATEGORY_LABELS,
+} from './jira-settings.js';
+
 // Re-export Action Items types
 export type {
   ActionItemSource,

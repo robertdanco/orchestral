@@ -8,11 +8,13 @@ import type { SlackCache } from '../slack/cache.js';
 import type { GoogleClient } from '../google/client.js';
 import type { GoogleDocsCache } from '../google/cache.js';
 import type { ManualItemsCache } from './manual-cache.js';
+import type { JiraSettingsCache } from './jira-settings-cache.js';
 import { detectJiraActions } from './jira-actions.js';
 import { detectConfluenceActions } from './confluence-actions.js';
 import { detectSlackActions } from './slack-actions.js';
 import { detectGoogleDocsActions } from './google-docs-actions.js';
 import { createManualItemsRouter } from './manual-routes.js';
+import { createJiraSettingsRouter } from './jira-settings-routes.js';
 import { processResult } from './utils.js';
 
 export function createActionItemsRouter(
@@ -20,6 +22,7 @@ export function createActionItemsRouter(
   confluenceClient: ConfluenceClient,
   confluenceCache: ConfluenceCache,
   manualCache: ManualItemsCache,
+  jiraSettingsCache: JiraSettingsCache,
   slackClient?: SlackClient,
   slackCache?: SlackCache,
   googleClient?: GoogleClient,
@@ -30,6 +33,9 @@ export function createActionItemsRouter(
 
   // Mount manual items subrouter
   router.use('/manual', createManualItemsRouter(manualCache));
+
+  // Mount Jira settings subrouter
+  router.use('/jira-settings', createJiraSettingsRouter(jiraSettingsCache));
 
   // POST /api/action-items/refresh - Clear caches to force refetch
   router.post('/refresh', async (_req: Request, res: Response) => {
@@ -59,7 +65,8 @@ export function createActionItemsRouter(
           // Trigger cache population if empty
           return [];
         }
-        return detectJiraActions(issues);
+        const settings = jiraSettingsCache.get();
+        return detectJiraActions(issues, settings);
       })(),
       (async (): Promise<ConfluenceActionItem[]> => {
         const currentUser = await confluenceClient.getCurrentUser();

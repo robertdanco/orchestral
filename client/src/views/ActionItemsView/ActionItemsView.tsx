@@ -1,14 +1,16 @@
 import { useState, useCallback } from 'react';
 import type { ActionItemsResponse, JiraItem, ManualActionItem, CreateManualActionItemInput, UpdateManualActionItemInput } from '../../types';
+import { useJiraSettings } from '../../hooks/useJiraSettings';
 import { JiraTab } from './JiraTab';
 import { ConfluenceTab } from './ConfluenceTab';
 import { ManualTab } from './ManualTab';
 import { SlackTab } from './SlackTab';
 import { GoogleDocsTab } from './GoogleDocsTab';
+import { SettingsTab } from './SettingsTab';
 import { ManualItemForm } from './ManualItemForm';
 import './ActionItemsView.css';
 
-type TabId = 'all' | 'jira' | 'confluence' | 'manual' | 'slack' | 'googleDocs';
+type TabId = 'all' | 'jira' | 'confluence' | 'manual' | 'slack' | 'googleDocs' | 'settings';
 
 interface ActionItemsViewProps {
   actionItems: ActionItemsResponse | null;
@@ -39,6 +41,14 @@ export function ActionItemsView({
   const [activeTab, setActiveTab] = useState<TabId>('all');
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState<ManualActionItem | null>(null);
+
+  const {
+    settings: jiraSettings,
+    loading: settingsLoading,
+    error: settingsError,
+    updateSettings,
+    resetSettings,
+  } = useJiraSettings();
 
   const handleSelectJiraIssue = useCallback((issueKey: string) => {
     const issue = getIssue(issueKey);
@@ -79,6 +89,11 @@ export function ActionItemsView({
     }
   }, [onDeleteManualItem]);
 
+  const handleSettingsChanged = useCallback(() => {
+    // Refresh action items when settings change
+    onRefresh();
+  }, [onRefresh]);
+
   if (loading && !actionItems) {
     return (
       <div className="action-items-view">
@@ -101,13 +116,14 @@ export function ActionItemsView({
   const googleDocsError = actionItems?.googleDocs.error;
   const totalCount = actionItems?.totalCount || 0;
 
-  const tabs: { id: TabId; label: string; count: number }[] = [
+  const tabs: { id: TabId; label: string; count?: number }[] = [
     { id: 'all', label: 'All', count: totalCount },
     { id: 'jira', label: 'Jira', count: jiraItems.length },
     { id: 'confluence', label: 'Confluence', count: confluenceItems.length },
     { id: 'slack', label: 'Slack', count: slackItems.length },
     { id: 'googleDocs', label: 'Meeting Notes', count: googleDocsItems.length },
     { id: 'manual', label: 'Manual', count: manualItems.length },
+    { id: 'settings', label: 'Settings' },
   ];
 
   return (
@@ -141,13 +157,15 @@ export function ActionItemsView({
             onClick={() => setActiveTab(tab.id)}
           >
             <span>{tab.label}</span>
-            <span
-              className={`action-items-view__tab-badge ${
-                tab.count === 0 ? 'action-items-view__tab-badge--zero' : ''
-              }`}
-            >
-              {tab.count}
-            </span>
+            {tab.count !== undefined && (
+              <span
+                className={`action-items-view__tab-badge ${
+                  tab.count === 0 ? 'action-items-view__tab-badge--zero' : ''
+                }`}
+              >
+                {tab.count}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -252,6 +270,17 @@ export function ActionItemsView({
           onDeleteItem={handleDeleteManualItem}
           onCompleteItem={onCompleteManualItem}
           onUncompleteItem={onUncompleteManualItem}
+        />
+      )}
+
+      {activeTab === 'settings' && (
+        <SettingsTab
+          settings={jiraSettings}
+          loading={settingsLoading}
+          error={settingsError}
+          onUpdateSettings={updateSettings}
+          onResetSettings={resetSettings}
+          onSettingsChanged={handleSettingsChanged}
         />
       )}
 

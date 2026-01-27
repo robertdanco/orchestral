@@ -1,16 +1,11 @@
-import type { JiraItem, ActionRequiredItem, ActionRequiredResult } from '@orchestral/shared';
+import type { JiraItem, ActionRequiredItem, ActionRequiredResult, JiraActionSettings } from '@orchestral/shared';
+import { DEFAULT_JIRA_ACTION_SETTINGS } from '@orchestral/shared';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
-export interface ActionConfig {
-  staleDays: number;
-  requireEstimates: boolean;
-}
-
-export const DEFAULT_ACTION_CONFIG: ActionConfig = {
-  staleDays: 5,
-  requireEstimates: true,
-};
+// Re-export for backwards compatibility
+export type ActionConfig = JiraActionSettings;
+export const DEFAULT_ACTION_CONFIG: ActionConfig = DEFAULT_JIRA_ACTION_SETTINGS;
 
 export function detectActionRequired(
   items: JiraItem[],
@@ -35,13 +30,15 @@ export function detectActionRequired(
 
   const now = new Date();
   const staleThreshold = config.staleDays * MS_PER_DAY;
+  const staleCategories = new Set(config.statusMappings.staleStatusCategories);
+  const unassignedCategories = new Set(config.statusMappings.unassignedStatusCategories);
 
   for (const item of items) {
     // Skip done items for most checks
     const isDone = item.statusCategory === 'done';
 
     // Blocked
-    if (item.blocked) {
+    if (config.enabledCategories.blocked && item.blocked) {
       // Find the blocker issue if blockedReason matches a key or summary
       const blocker = item.blockedReason
         ? itemsByKey.get(item.blockedReason) || itemsBySummary.get(item.blockedReason)
@@ -61,7 +58,7 @@ export function detectActionRequired(
       });
 
       // Add blocker to blockers list if found and not done
-      if (blocker && blocker.statusCategory !== 'done') {
+      if (config.enabledCategories.blocker && blocker && blocker.statusCategory !== 'done') {
         const blockedRef = `[${item.key}] ${item.summary}`;
         const alreadyAdded = result.blockers.some(b => b.item.key === blocker.key);
         if (!alreadyAdded) {
@@ -79,8 +76,8 @@ export function detectActionRequired(
       }
     }
 
-    // Stale (in progress but not updated recently)
-    if (item.statusCategory === 'inprogress') {
+    // Stale (in configured status categories but not updated recently)
+    if (config.enabledCategories.stale && staleCategories.has(item.statusCategory)) {
       const updatedAt = new Date(item.updated);
       const age = now.getTime() - updatedAt.getTime();
       if (age > staleThreshold) {
@@ -92,16 +89,18 @@ export function detectActionRequired(
       }
     }
 
-    // Unassigned (not done, in progress or todo)
-    if (!isDone && !item.assignee) {
-      result.unassigned.push({
-        item,
-        reason: 'No assignee',
-      });
+    // Unassigned (in configured status categories without assignee)
+    if (config.enabledCategories.unassigned && !isDone && !item.assignee) {
+      if (unassignedCategories.has(item.statusCategory)) {
+        result.unassigned.push({
+          item,
+          reason: 'No assignee',
+        });
+      }
     }
 
     // Unestimated (stories only, if enabled)
-    if (config.requireEstimates && item.type === 'story' && item.estimate === null) {
+    if (config.enabledCategories.unestimated && config.requireEstimates && item.type === 'story' && item.estimate === null) {
       result.unestimated.push({
         item,
         reason: 'Missing story points',
