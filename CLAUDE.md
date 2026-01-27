@@ -66,11 +66,13 @@ Optional integrations:
 - Async states: Use `waitFor`, don't assert synchronously after async calls
 - Time filters: Use relative dates, not hardcoded past dates
 - Multiple elements: Use `getByRole('heading', {...})` for specificity
+- ActionConfig: Test config objects must include all fields (enabledCategories, statusMappings)
 
 ### Integrations
 - Slack/Google: Optional, return empty arrays when env vars missing
 - Manual items: Persist to `data/manual-items.json`
-- Caches: In-memory except manual items
+- Settings: Persist to `data/jira-settings.json`; follow `manual-cache.ts` pattern for file-based caches
+- Caches: In-memory except manual items and settings
 - Multi-source aggregation: Use `Promise.allSettled` for partial failure handling
 
 ### CSS
