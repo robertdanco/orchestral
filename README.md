@@ -32,10 +32,13 @@ Copy `.env.example` to `.env` and configure:
 - `JIRA_URL` - Your Atlassian instance URL
 - `JIRA_EMAIL` - Your Atlassian email
 - `JIRA_API_TOKEN` - [Generate an API token](https://id.atlassian.com/manage-profile/security/api-tokens)
+
+**Optional (can be configured via onboarding wizard instead):**
 - `JIRA_PROJECT_KEYS` - Comma-separated project keys to track
+- `CONFLUENCE_SPACE_KEYS` - Comma-separated Confluence space keys
 
 **Optional integrations:**
-- **Confluence** - Uses same Atlassian auth; set `CONFLUENCE_SPACE_KEYS` to limit spaces
+- **Confluence** - Uses same Atlassian auth
 - **AI Chat** - Set `ANTHROPIC_API_KEY`
 - **Slack** - Set `SLACK_BOT_TOKEN` and `SLACK_CHANNEL_IDS`
 - **Google Docs** - Set `GOOGLE_SERVICE_ACCOUNT_KEY_PATH` or `GOOGLE_SERVICE_ACCOUNT_KEY`
@@ -47,6 +50,16 @@ npm run dev          # Start both server and client
 npm run dev:server   # Server only
 npm run dev:client   # Client only
 ```
+
+### First Run
+
+On first visit, you'll be guided through an onboarding wizard to:
+1. Verify your Jira API connection
+2. Select which Jira projects to track
+3. Optionally select Confluence spaces to include
+4. Review detected workflow statuses
+
+Settings are saved to `data/onboarding-settings.json` and override any env var configuration.
 
 ### Testing
 
@@ -66,11 +79,12 @@ npm run test:client  # Client tests only
 - `slack/` - Optional Slack integration
 - `google/` - Optional Google Docs integration
 - `action-items/` - Aggregates items from all sources
+- `onboarding/` - First-run setup wizard
 - `chat/` - AI assistant with pluggable knowledge sources
 
 ### Client (`client/src/`)
 - `hooks/` - Data fetching hooks with loading/refreshing states
-- `views/` - Main application views
+- `views/` - Main application views (including `OnboardingView/` wizard)
 - `components/` - Reusable UI components
 
 ### Shared (`shared/src/`)
