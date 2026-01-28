@@ -7,6 +7,15 @@ vi.mock('./api');
 
 describe('App', () => {
   beforeEach(() => {
+    // Mock onboarding as complete so tests can access main app
+    vi.mocked(api.getOnboardingStatus).mockResolvedValue({
+      isComplete: true,
+      settings: {
+        selectedProjectKeys: ['TEST'],
+        selectedSpaceKeys: [],
+        completedAt: new Date().toISOString(),
+      },
+    });
     vi.mocked(api.getIssues).mockResolvedValue({
       issues: [],
       lastRefreshed: new Date().toISOString(),

@@ -1,5 +1,16 @@
 // Shared types for Orchestral
 
+// Re-export Onboarding types
+export type {
+  JiraProjectInfo,
+  JiraStatusInfo,
+  ConfluenceSpaceInfo,
+  OnboardingSettings,
+  OnboardingStatus,
+  UpdateOnboardingSettingsInput,
+} from './onboarding.js';
+export { DEFAULT_ONBOARDING_SETTINGS } from './onboarding.js';
+
 // Re-export Jira Settings types
 export type {
   JiraActionCategory,

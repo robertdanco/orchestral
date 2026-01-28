@@ -23,6 +23,8 @@ import { GoogleDocsSource } from './chat/sources/google-docs.js';
 import { createActionItemsRouter } from './action-items/routes.js';
 import { ManualItemsCache } from './action-items/manual-cache.js';
 import { JiraSettingsCache } from './action-items/jira-settings-cache.js';
+import { OnboardingSettingsCache } from './onboarding/settings-cache.js';
+import { createOnboardingRouter } from './onboarding/routes.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -40,12 +42,27 @@ app.get('/api/health', (_req, res) => {
 
 // Initialize Jira client and cache only if credentials are provided
 if (process.env.JIRA_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN) {
+  // Initialize Onboarding Settings cache first (file-based persistence)
+  const onboardingSettingsCache = new OnboardingSettingsCache();
+  console.log('Onboarding Settings cache initialized');
+
+  // Determine project/space keys: use onboarding settings if complete, otherwise env vars
+  const envProjectKeys = (process.env.JIRA_PROJECT_KEYS || '').split(',').filter(Boolean);
+  const envSpaceKeys = (process.env.CONFLUENCE_SPACE_KEYS || '').split(',').filter(Boolean);
+
+  const effectiveProjectKeys = onboardingSettingsCache.isComplete()
+    ? onboardingSettingsCache.getSelectedProjectKeys()
+    : envProjectKeys;
+  const effectiveSpaceKeys = onboardingSettingsCache.isComplete()
+    ? onboardingSettingsCache.getSelectedSpaceKeys()
+    : envSpaceKeys;
+
   const cache = new Cache();
   const jiraClient = new JiraClient({
     baseUrl: process.env.JIRA_URL,
     email: process.env.JIRA_EMAIL,
     apiToken: process.env.JIRA_API_TOKEN,
-    projectKeys: (process.env.JIRA_PROJECT_KEYS || '').split(',').filter(Boolean),
+    projectKeys: effectiveProjectKeys,
   });
 
   // Mount API routes
@@ -57,8 +74,17 @@ if (process.env.JIRA_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN
     baseUrl: process.env.JIRA_URL,
     email: process.env.JIRA_EMAIL,
     apiToken: process.env.JIRA_API_TOKEN,
-    spaceKeys: (process.env.CONFLUENCE_SPACE_KEYS || '').split(',').filter(Boolean),
+    spaceKeys: effectiveSpaceKeys,
   });
+
+  // Mount Onboarding routes (uses jiraClient for discovery, not filtered by projectKeys)
+  const discoveryJiraClient = new JiraClient({
+    baseUrl: process.env.JIRA_URL,
+    email: process.env.JIRA_EMAIL,
+    apiToken: process.env.JIRA_API_TOKEN,
+    projectKeys: [], // Empty - discovery fetches all accessible projects
+  });
+  app.use('/api/onboarding', createOnboardingRouter(onboardingSettingsCache, discoveryJiraClient, confluenceClient));
 
   // Mount Confluence routes
   app.use('/api/confluence', createConfluenceRouter(confluenceCache, confluenceClient));

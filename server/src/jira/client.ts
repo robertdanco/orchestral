@@ -1,4 +1,5 @@
 import { JiraItem, IssueType, StatusCategory } from '../types.js';
+import type { JiraProjectInfo, JiraStatusInfo } from '@orchestral/shared';
 
 export interface JiraClientConfig {
   baseUrl: string;
@@ -125,5 +126,85 @@ export class JiraClient {
     if (key === 'new' || key === 'undefined') return 'todo';
     if (key === 'indeterminate') return 'inprogress';
     return 'done';
+  }
+
+  async fetchProjects(): Promise<JiraProjectInfo[]> {
+    const url = `${this.baseUrl}/rest/api/3/project`;
+
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Jira API error: ${response.status}`);
+    }
+
+    interface JiraProject {
+      key: string;
+      name: string;
+      avatarUrls?: { '48x48'?: string };
+    }
+
+    const data = await response.json() as JiraProject[];
+    return data.map(project => ({
+      key: project.key,
+      name: project.name,
+      avatarUrl: project.avatarUrls?.['48x48'],
+    }));
+  }
+
+  async fetchStatuses(): Promise<JiraStatusInfo[]> {
+    const url = `${this.baseUrl}/rest/api/3/status`;
+
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Jira API error: ${response.status}`);
+    }
+
+    interface JiraStatus {
+      id: string;
+      name: string;
+      statusCategory: { key: string };
+    }
+
+    const data = await response.json() as JiraStatus[];
+
+    // Deduplicate by name since same status can appear multiple times
+    const seen = new Set<string>();
+    return data
+      .filter(status => {
+        if (seen.has(status.name)) return false;
+        seen.add(status.name);
+        return true;
+      })
+      .map(status => ({
+        id: status.id,
+        name: status.name,
+        category: this.mapStatusCategory(status.statusCategory.key),
+      }));
+  }
+
+  async testConnection(): Promise<boolean> {
+    try {
+      const url = `${this.baseUrl}/rest/api/3/myself`;
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': this.getAuthHeader(),
+          'Accept': 'application/json',
+        },
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
   }
 }

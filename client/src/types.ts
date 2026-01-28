@@ -46,5 +46,12 @@ export type {
   SlackMessage,
   SlackReaction,
   SlackUser,
+  // Onboarding types
+  JiraProjectInfo,
+  JiraStatusInfo,
+  ConfluenceSpaceInfo,
+  OnboardingSettings,
+  OnboardingStatus,
+  UpdateOnboardingSettingsInput,
 } from '@orchestral/shared';
-export { isValidJiraItem, DEFAULT_JIRA_ACTION_SETTINGS, JIRA_ACTION_CATEGORY_LABELS } from '@orchestral/shared';
+export { isValidJiraItem, DEFAULT_JIRA_ACTION_SETTINGS, JIRA_ACTION_CATEGORY_LABELS, DEFAULT_ONBOARDING_SETTINGS } from '@orchestral/shared';

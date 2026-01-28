@@ -14,6 +14,12 @@ import type {
   UpdateManualActionItemInput,
   JiraActionSettings,
   UpdateJiraActionSettingsInput,
+  JiraProjectInfo,
+  JiraStatusInfo,
+  ConfluenceSpaceInfo,
+  OnboardingSettings,
+  OnboardingStatus,
+  UpdateOnboardingSettingsInput,
 } from './types';
 
 export class ApiError extends Error {
@@ -150,5 +156,42 @@ export const api = {
 
   async resetJiraSettings(): Promise<JiraActionSettings> {
     return fetchJson('/api/action-items/jira-settings/reset', { method: 'POST' });
+  },
+
+  // Onboarding API
+  async getOnboardingStatus(): Promise<OnboardingStatus> {
+    return fetchJson('/api/onboarding/status');
+  },
+
+  async getOnboardingConnection(): Promise<{ connected: boolean }> {
+    return fetchJson('/api/onboarding/connection');
+  },
+
+  async getOnboardingProjects(): Promise<{ projects: JiraProjectInfo[] }> {
+    return fetchJson('/api/onboarding/jira/projects');
+  },
+
+  async getOnboardingStatuses(): Promise<{ statuses: JiraStatusInfo[] }> {
+    return fetchJson('/api/onboarding/jira/statuses');
+  },
+
+  async getOnboardingSpaces(): Promise<{ spaces: ConfluenceSpaceInfo[]; available: boolean }> {
+    return fetchJson('/api/onboarding/confluence/spaces');
+  },
+
+  async updateOnboardingSettings(input: UpdateOnboardingSettingsInput): Promise<OnboardingSettings> {
+    return fetchJson('/api/onboarding/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    });
+  },
+
+  async completeOnboarding(): Promise<OnboardingSettings> {
+    return fetchJson('/api/onboarding/complete', { method: 'POST' });
+  },
+
+  async resetOnboarding(): Promise<OnboardingSettings> {
+    return fetchJson('/api/onboarding/reset', { method: 'POST' });
   },
 };
