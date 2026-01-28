@@ -80,16 +80,15 @@ export function SettingsTab({
     saveSettings(() => onResetSettings(), 'Failed to reset');
   }, [onResetSettings, saveSettings]);
 
-  const toggleStatusCategory = useCallback((
+  function toggleStatusCategory(
     current: StatusCategoryValue[],
     value: StatusCategoryValue,
     checked: boolean
-  ): StatusCategoryValue[] => {
-    if (checked) {
-      return [...current, value];
-    }
-    return current.filter(c => c !== value);
-  }, []);
+  ): StatusCategoryValue[] {
+    return checked
+      ? [...current, value]
+      : current.filter(c => c !== value);
+  }
 
   if (loading && !settings) {
     return (
@@ -213,11 +212,10 @@ export function SettingsTab({
                   className="settings-tab__checkbox"
                   checked={settings.statusMappings.staleStatusCategories.includes(option.value)}
                   onChange={(e) => {
-                    const updated = toggleStatusCategory(
-                      settings.statusMappings.staleStatusCategories,
-                      option.value,
-                      e.target.checked
+                    const current = settings.statusMappings.staleStatusCategories.filter(
+                      (c): c is StatusCategoryValue => c === 'todo' || c === 'inprogress'
                     );
+                    const updated = toggleStatusCategory(current, option.value, e.target.checked);
                     handleStatusMappingChange('staleStatusCategories', updated);
                   }}
                   disabled={saving}
@@ -241,11 +239,10 @@ export function SettingsTab({
                   className="settings-tab__checkbox"
                   checked={settings.statusMappings.unassignedStatusCategories.includes(option.value)}
                   onChange={(e) => {
-                    const updated = toggleStatusCategory(
-                      settings.statusMappings.unassignedStatusCategories,
-                      option.value,
-                      e.target.checked
+                    const current = settings.statusMappings.unassignedStatusCategories.filter(
+                      (c): c is StatusCategoryValue => c === 'todo' || c === 'inprogress'
                     );
+                    const updated = toggleStatusCategory(current, option.value, e.target.checked);
                     handleStatusMappingChange('unassignedStatusCategories', updated);
                   }}
                   disabled={saving}

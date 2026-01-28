@@ -15,11 +15,11 @@ export function WelcomeStep({ onCheckConnection, connected }: WelcomeStepProps):
     }
   }, [connected, onCheckConnection]);
 
-  const handleRetry = async () => {
+  async function handleRetry(): Promise<void> {
     setChecking(true);
     await onCheckConnection();
     setChecking(false);
-  };
+  }
 
   return (
     <div className="onboarding-step">

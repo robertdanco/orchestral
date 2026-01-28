@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOnboarding } from '../../hooks/useOnboarding';
 import { WelcomeStep } from './WelcomeStep';
@@ -64,11 +64,6 @@ export function OnboardingView({
     updateSettings,
     completeOnboarding,
   } = useOnboarding();
-
-  // Initialize from existing settings
-  useEffect(() => {
-    // Will be populated if resuming partial onboarding
-  }, []);
 
   const currentStepIndex = STEPS.indexOf(currentStep);
   const stepInfo = STEP_INFO[currentStep];
@@ -166,18 +161,20 @@ export function OnboardingView({
     <div className="onboarding-view">
       <div className="onboarding-view__container">
         <div className="onboarding-view__progress">
-          {STEPS.map((step, index) => (
-            <div
-              key={step}
-              className={`onboarding-view__progress-step ${
-                index === currentStepIndex
-                  ? 'onboarding-view__progress-step--active'
-                  : index < currentStepIndex
-                  ? 'onboarding-view__progress-step--completed'
-                  : ''
-              }`}
-            />
-          ))}
+          {STEPS.map((step, index) => {
+            let modifier = '';
+            if (index === currentStepIndex) {
+              modifier = 'onboarding-view__progress-step--active';
+            } else if (index < currentStepIndex) {
+              modifier = 'onboarding-view__progress-step--completed';
+            }
+            return (
+              <div
+                key={step}
+                className={`onboarding-view__progress-step ${modifier}`}
+              />
+            );
+          })}
         </div>
 
         <div className="onboarding-view__content">

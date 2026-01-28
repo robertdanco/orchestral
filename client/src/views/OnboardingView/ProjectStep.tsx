@@ -37,12 +37,12 @@ export function ProjectStep({
     }
   }, [fetched, projects.length, selectedKeys.length, envSuggestedKeys, onFetchProjects, onSelectionChange]);
 
-  const handleToggle = (key: string) => {
+  function handleToggle(key: string): void {
     const newKeys = selectedKeys.includes(key)
       ? selectedKeys.filter(k => k !== key)
       : [...selectedKeys, key];
     onSelectionChange(newKeys);
-  };
+  }
 
   if (loading) {
     return (

@@ -55,6 +55,8 @@ Optional integrations:
 - Hooks: Use `useLoadingState` for loading/error states
 - Optional integrations: Pass optional params (`slackClient?: SlackClient`), check existence
 - Detection functions: Process cached data only, don't fetch
+- Functions: Prefer function declarations over arrow functions for component handlers; add explicit return types
+- Literal arrays: Use `as const` for type inference (e.g., `['todo', 'done'] as const`)
 
 ## Gotchas
 

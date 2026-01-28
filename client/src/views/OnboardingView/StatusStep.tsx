@@ -61,7 +61,7 @@ export function StatusStep({
     return acc;
   }, {} as Record<string, JiraStatusInfo[]>);
 
-  const categoryOrder: Array<'todo' | 'inprogress' | 'done'> = ['todo', 'inprogress', 'done'];
+  const categoryOrder = ['todo', 'inprogress', 'done'] as const;
 
   return (
     <div className="onboarding-step">
