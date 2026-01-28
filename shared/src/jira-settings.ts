@@ -2,13 +2,16 @@
 
 export type JiraActionCategory = 'blocker' | 'blocked' | 'stale' | 'missingDetails' | 'unassigned' | 'unestimated';
 
+// Local type to avoid circular dependency with index.ts
+type StatusCategoryType = 'todo' | 'inprogress' | 'done';
+
 export interface JiraActionSettings {
   staleDays: number;
   requireEstimates: boolean;
   enabledCategories: Record<JiraActionCategory, boolean>;
   statusMappings: {
-    staleStatusCategories: ('todo' | 'inprogress')[];
-    unassignedStatusCategories: ('todo' | 'inprogress')[];
+    staleStatusCategories: StatusCategoryType[];
+    unassignedStatusCategories: StatusCategoryType[];
   };
 }
 
