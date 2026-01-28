@@ -22,6 +22,7 @@ cd shared && npm run build  # Rebuild shared types after changes
 - `slack/` - Optional Slack integration (`SLACK_BOT_TOKEN`)
 - `google/` - Optional Google Docs integration (service account)
 - `action-items/` - Aggregates items from all sources
+- `onboarding/` - First-run wizard; settings override env vars when complete
 - `chat/` - AI assistant with pluggable knowledge sources
 - `cache/types.ts` - `ICache` interface for all caches
 
@@ -60,6 +61,7 @@ Optional integrations:
 ### TypeScript
 - Unused imports fail client build (runs tsc first)
 - Unused params: prefix with underscore (`_options`)
+- `Set.has()`: Ensure Set generic type matches argument type (tests may pass but build fails)
 
 ### Testing
 - jsdom: Mock `scrollIntoView` with `vi.fn()`
@@ -67,11 +69,13 @@ Optional integrations:
 - Time filters: Use relative dates, not hardcoded past dates
 - Multiple elements: Use `getByRole('heading', {...})` for specificity
 - ActionConfig: Test config objects must include all fields (enabledCategories, statusMappings)
+- App tests: Mock `api.getOnboardingStatus` as complete to bypass redirect
 
 ### Integrations
 - Slack/Google: Optional, return empty arrays when env vars missing
 - Manual items: Persist to `data/manual-items.json`
 - Settings: Persist to `data/jira-settings.json`; follow `manual-cache.ts` pattern for file-based caches
+- Onboarding: Persist to `data/onboarding-settings.json`; overrides `JIRA_PROJECT_KEYS`/`CONFLUENCE_SPACE_KEYS` when complete
 - Caches: In-memory except manual items and settings
 - Multi-source aggregation: Use `Promise.allSettled` for partial failure handling
 
