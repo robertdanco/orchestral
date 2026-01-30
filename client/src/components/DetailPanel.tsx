@@ -37,7 +37,7 @@ export function DetailPanel({ item, onClose }: DetailPanelProps): JSX.Element | 
           </button>
         </div>
         <h2 className="detail-panel__summary">{item.summary}</h2>
-        <span className={`detail-panel__status detail-panel__status--${item.statusCategory}`}>
+        <span className={`detail-panel__status detail-panel__status--${item.displayStatus}`}>
           {item.status}
         </span>
       </div>

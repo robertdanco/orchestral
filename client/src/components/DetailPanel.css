@@ -96,19 +96,43 @@
   border-radius: var(--md-sys-shape-corner-small);
 }
 
-.detail-panel__status--todo {
+/* Display status styles - Unstarted group */
+.detail-panel__status--backlog,
+.detail-panel__status--triage {
   background: var(--md-sys-color-surface-container-high);
   color: var(--md-sys-color-on-surface-variant);
 }
 
-.detail-panel__status--inprogress {
+/* Display status styles - Active group */
+.detail-panel__status--in-progress {
   background: var(--color-inprogress-bg);
   color: var(--color-inprogress-text);
 }
 
+.detail-panel__status--code-review {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.detail-panel__status--design-review {
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+}
+
+.detail-panel__status--in-qa {
+  background: var(--color-qa-bg);
+  color: var(--color-qa-text);
+}
+
+/* Display status styles - Completed group */
 .detail-panel__status--done {
   background: var(--color-done-bg);
   color: var(--color-done-text);
+}
+
+.detail-panel__status--abandoned {
+  background: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
 }
 
 .detail-panel__body {

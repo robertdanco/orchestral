@@ -18,16 +18,40 @@
   transform: translateY(-2px);
 }
 
-.issue-card--todo {
+/* Display status colors - Unstarted group (gray tones) */
+.issue-card--backlog {
   border-left-color: var(--md-sys-color-outline);
 }
 
-.issue-card--inprogress {
+.issue-card--triage {
+  border-left-color: var(--md-sys-color-outline-variant);
+}
+
+/* Display status colors - Active group (primary/indigo tones) */
+.issue-card--in-progress {
   border-left-color: var(--md-sys-color-primary);
 }
 
+.issue-card--code-review {
+  border-left-color: var(--md-sys-color-secondary);
+}
+
+.issue-card--design-review {
+  border-left-color: var(--md-sys-color-tertiary);
+}
+
+.issue-card--in-qa {
+  border-left-color: var(--color-qa);
+}
+
+/* Display status colors - Completed group (green tones) */
 .issue-card--done {
   border-left-color: var(--color-done);
+}
+
+.issue-card--abandoned {
+  border-left-color: var(--md-sys-color-error);
+  opacity: 0.7;
 }
 
 .issue-card__header {

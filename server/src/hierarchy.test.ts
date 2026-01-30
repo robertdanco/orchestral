@@ -9,6 +9,7 @@ describe('buildHierarchy', () => {
     type: type as JiraItem['type'],
     status: 'To Do',
     statusCategory: 'todo',
+    displayStatus: 'backlog',
     assignee: null,
     parentKey,
     estimate: null,

@@ -11,6 +11,7 @@ describe('Cache', () => {
     type: 'story',
     status: 'To Do',
     statusCategory: 'todo',
+    displayStatus: 'backlog',
     assignee: null,
     parentKey: null,
     estimate: null,

@@ -16,6 +16,7 @@ describe('API Routes', () => {
     type: 'story' as const,
     status: 'To Do',
     statusCategory: 'todo' as const,
+    displayStatus: 'backlog' as const,
     assignee: null,
     parentKey: null,
     estimate: null,
@@ -92,7 +93,7 @@ describe('API Routes', () => {
 
   describe('GET /api/actions', () => {
     it('returns action required items', async () => {
-      cache.setIssues([{ ...mockItem, assignee: null, statusCategory: 'inprogress' }]);
+      cache.setIssues([{ ...mockItem, assignee: null, statusCategory: 'inprogress', displayStatus: 'in-progress' }]);
 
       const response = await request(app).get('/api/actions');
 

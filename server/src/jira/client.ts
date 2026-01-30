@@ -1,5 +1,6 @@
-import { JiraItem, IssueType, StatusCategory } from '../types.js';
-import type { JiraProjectInfo, JiraStatusInfo } from '@orchestral/shared';
+import { JiraItem, IssueType, StatusCategory, DisplayStatus } from '../types.js';
+import type { JiraProjectInfo, JiraStatusInfo, StatusMappingConfig } from '@orchestral/shared';
+import { DEFAULT_STATUS_MAPPINGS } from '@orchestral/shared';
 
 export interface JiraClientConfig {
   baseUrl: string;
@@ -40,6 +41,7 @@ export class JiraClient {
   private email: string;
   private apiToken: string;
   private projectKeys: string[];
+  private statusMappings: StatusMappingConfig;
 
   constructor(config: JiraClientConfig) {
     if (!config.baseUrl) throw new Error('JIRA_URL is required');
@@ -50,6 +52,15 @@ export class JiraClient {
     this.email = config.email;
     this.apiToken = config.apiToken;
     this.projectKeys = config.projectKeys;
+    this.statusMappings = { ...DEFAULT_STATUS_MAPPINGS };
+  }
+
+  setStatusMappings(mappings: StatusMappingConfig): void {
+    this.statusMappings = mappings;
+  }
+
+  getStatusMappings(): StatusMappingConfig {
+    return this.statusMappings;
   }
 
   getAuthHeader(): string {
@@ -95,12 +106,16 @@ export class JiraClient {
       link => link.type.name === 'Blocks' && link.inwardIssue
     );
 
+    const statusName = issue.fields.status.name;
+    const statusCategory = this.mapStatusCategory(issue.fields.status.statusCategory.key);
+
     return {
       key: issue.key,
       summary: issue.fields.summary,
       type: this.mapIssueType(issue.fields.issuetype.name),
-      status: issue.fields.status.name,
-      statusCategory: this.mapStatusCategory(issue.fields.status.statusCategory.key),
+      status: statusName,
+      statusCategory,
+      displayStatus: this.mapDisplayStatus(statusName, statusCategory),
       assignee: issue.fields.assignee?.displayName ?? null,
       parentKey: issue.fields.parent?.key ?? null,
       estimate: issue.fields.customfield_10016 ?? null,
@@ -111,6 +126,17 @@ export class JiraClient {
       blockedReason: blockerLink?.inwardIssue?.fields?.summary ?? null,
       url: `${this.baseUrl}/browse/${issue.key}`,
     };
+  }
+
+  private mapDisplayStatus(statusName: string, category: StatusCategory): DisplayStatus {
+    // First check for direct mapping by status name
+    const directMapping = this.statusMappings.statusToDisplay[statusName];
+    if (directMapping) {
+      return directMapping;
+    }
+
+    // Fall back to category default
+    return this.statusMappings.categoryDefaults[category];
   }
 
   private mapIssueType(name: string): IssueType {

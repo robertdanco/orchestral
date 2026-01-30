@@ -56,6 +56,9 @@
   --color-inprogress: var(--md-sys-color-primary);
   --color-inprogress-bg: var(--md-sys-color-primary-container);
   --color-inprogress-text: var(--md-sys-color-on-primary-container);
+  --color-qa: #7c4dff;
+  --color-qa-bg: #ede7f6;
+  --color-qa-text: #4a148c;
 
   /* Issue Type Colors */
   --color-epic: #7C4DFF;

@@ -10,6 +10,7 @@ describe('DetailPanel', () => {
     type: 'story',
     status: 'In Progress',
     statusCategory: 'inprogress',
+    displayStatus: 'in-progress',
     assignee: 'John Doe',
     parentKey: 'PROJ-100',
     estimate: 5,

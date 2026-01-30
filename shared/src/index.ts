@@ -1,5 +1,25 @@
 // Shared types for Orchestral
 
+// Re-export Status types
+export type {
+  DisplayStatus,
+  StatusGroup,
+} from './status.js';
+export {
+  DISPLAY_STATUS_COLUMNS,
+  ALL_DISPLAY_STATUSES,
+  STATUS_GROUP_MAP,
+  DISPLAY_STATUS_LABELS,
+  STATUS_GROUP_LABELS,
+} from './status.js';
+
+// Re-export Status Settings types
+export type {
+  StatusMappingConfig,
+  UpdateStatusMappingInput,
+} from './status-settings.js';
+export { DEFAULT_STATUS_MAPPINGS } from './status-settings.js';
+
 // Re-export Onboarding types
 export type {
   JiraProjectInfo,
@@ -69,6 +89,32 @@ export type {
   ConfluenceSearchResult,
 } from './confluence.js';
 
+// Re-export Fireflies types
+export type {
+  FirefliesParticipant,
+  FirefliesTranscriptSentence,
+  FirefliesActionItem,
+  FirefliesAISummary,
+  FirefliesMeeting,
+  FirefliesMeetingListItem,
+  FirefliesMeetingsResponse,
+} from './fireflies.js';
+
+// Re-export Feature Request types
+export type {
+  FeatureRequestSource,
+  RICEScore,
+  FeatureRequestMention,
+  FeatureRequest,
+  FeatureRequestListItem,
+  FeatureRequestsResponse,
+  CreateFeatureRequestInput,
+  UpdateFeatureRequestInput,
+  ExtractedFeatureRequest,
+} from './feature-requests.js';
+
+import type { DisplayStatus } from './status.js';
+
 export type IssueType = 'initiative' | 'epic' | 'story' | 'task' | 'bug';
 export type StatusCategory = 'todo' | 'inprogress' | 'done';
 
@@ -78,6 +124,7 @@ export interface JiraItem {
   type: IssueType;
   status: string;
   statusCategory: StatusCategory;
+  displayStatus: DisplayStatus;
   assignee: string | null;
   parentKey: string | null;
   estimate: number | null;
@@ -114,7 +161,7 @@ export interface IssuesResponse {
 
 // Validation utility
 const REQUIRED_FIELDS = [
-  'key', 'summary', 'type', 'status', 'statusCategory',
+  'key', 'summary', 'type', 'status', 'statusCategory', 'displayStatus',
   'created', 'updated', 'labels', 'blocked', 'url'
 ];
 

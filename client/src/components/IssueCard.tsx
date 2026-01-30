@@ -9,7 +9,7 @@ interface IssueCardProps {
 export function IssueCard({ item, onClick }: IssueCardProps): JSX.Element {
   return (
     <button
-      className={`issue-card issue-card--${item.statusCategory}`}
+      className={`issue-card issue-card--${item.displayStatus}`}
       onClick={() => onClick(item)}
     >
       <div className="issue-card__header">

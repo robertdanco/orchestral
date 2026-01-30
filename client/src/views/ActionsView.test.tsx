@@ -10,6 +10,7 @@ describe('ActionsView', () => {
     type: 'story',
     status: 'In Progress',
     statusCategory: 'inprogress',
+    displayStatus: 'in-progress',
     assignee: null,
     parentKey: null,
     estimate: null,

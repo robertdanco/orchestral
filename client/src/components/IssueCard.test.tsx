@@ -10,6 +10,7 @@ describe('IssueCard', () => {
     type: 'story',
     status: 'In Progress',
     statusCategory: 'inprogress',
+    displayStatus: 'in-progress',
     assignee: 'John Doe',
     parentKey: null,
     estimate: 5,

@@ -20,9 +20,17 @@ import { SlackMessagesSource } from './chat/sources/slack-messages.js';
 import { GoogleClient } from './google/client.js';
 import { GoogleDocsCache } from './google/cache.js';
 import { GoogleDocsSource } from './chat/sources/google-docs.js';
+import { FirefliesClient } from './fireflies/client.js';
+import { FirefliesCache } from './fireflies/cache.js';
+import { FirefliesMeetingsSource } from './chat/sources/fireflies-meetings.js';
+import { FeatureRequestsCache } from './insights/feature-requests/cache.js';
+import { createFeatureRequestsRouter } from './insights/feature-requests/routes.js';
+import { FeatureRequestsSource } from './chat/sources/feature-requests.js';
 import { createActionItemsRouter } from './action-items/routes.js';
 import { ManualItemsCache } from './action-items/manual-cache.js';
 import { JiraSettingsCache } from './action-items/jira-settings-cache.js';
+import { StatusMappingCache } from './action-items/status-mapping-cache.js';
+import { createStatusMappingRouter } from './action-items/status-mapping-routes.js';
 import { OnboardingSettingsCache } from './onboarding/settings-cache.js';
 import { createOnboardingRouter } from './onboarding/routes.js';
 
@@ -98,6 +106,14 @@ if (process.env.JIRA_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN
   const jiraSettingsCache = new JiraSettingsCache();
   console.log('Jira Settings cache initialized');
 
+  // Initialize Status Mapping cache (file-based persistence)
+  const statusMappingCache = new StatusMappingCache();
+  jiraClient.setStatusMappings(statusMappingCache.get());
+  console.log('Status Mapping cache initialized');
+
+  // Mount Status Mapping routes
+  app.use('/api/status-mappings', createStatusMappingRouter(statusMappingCache, jiraClient));
+
   // Initialize Slack client and cache if token is provided
   let slackClient: SlackClient | undefined;
   let slackCache: SlackCache | undefined;
@@ -131,6 +147,21 @@ if (process.env.JIRA_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN
     }
   }
 
+  // Initialize Fireflies client and cache if API key is provided
+  let firefliesClient: FirefliesClient | undefined;
+  let firefliesCache: FirefliesCache | undefined;
+  if (process.env.FIREFLIES_API_KEY) {
+    try {
+      firefliesClient = new FirefliesClient({
+        apiKey: process.env.FIREFLIES_API_KEY,
+      });
+      firefliesCache = new FirefliesCache();
+      console.log('Fireflies integration initialized');
+    } catch (error) {
+      console.error('Failed to initialize Fireflies integration:', error);
+    }
+  }
+
   // Mount Action Items routes
   app.use('/api/action-items', createActionItemsRouter(
     cache,
@@ -145,6 +176,19 @@ if (process.env.JIRA_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN
     meetingNotesPattern
   ));
   console.log('Action Items integration initialized');
+
+  // Initialize Feature Requests cache (file-based persistence)
+  const featureRequestsCache = new FeatureRequestsCache();
+  console.log('Feature Requests cache initialized');
+
+  // Mount Feature Requests routes
+  app.use('/api/feature-requests', createFeatureRequestsRouter(
+    featureRequestsCache,
+    firefliesClient,
+    firefliesCache,
+    slackCache
+  ));
+  console.log('Feature Requests integration initialized');
 
   // Initialize chat service if Anthropic API key is available
   if (process.env.ANTHROPIC_API_KEY) {
@@ -167,11 +211,20 @@ if (process.env.JIRA_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN
       chatService.registerSource(new GoogleDocsSource(googleClient, googleDocsCache));
     }
 
+    // Register Fireflies meetings knowledge source if available
+    if (firefliesClient && firefliesCache) {
+      chatService.registerSource(new FirefliesMeetingsSource(firefliesClient, firefliesCache));
+    }
+
+    // Register Feature Requests knowledge source
+    chatService.registerSource(new FeatureRequestsSource(featureRequestsCache));
+
     // Mount chat routes
     app.use('/api/chat', createChatRouter(chatService));
     const sources = ['Jira', 'Confluence'];
     if (slackClient) sources.push('Slack');
     if (googleClient) sources.push('Google Docs');
+    if (firefliesClient) sources.push('Fireflies');
     console.log(`Chat service initialized with ${sources.join(', ')} knowledge sources`);
   } else {
     console.log('ANTHROPIC_API_KEY not set - chat feature disabled');

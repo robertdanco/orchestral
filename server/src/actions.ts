@@ -34,6 +34,9 @@ export function detectActionRequired(
   const unassignedCategories = new Set(config.statusMappings.unassignedStatusCategories);
 
   for (const item of items) {
+    // Skip abandoned items entirely
+    if (item.displayStatus === 'abandoned') continue;
+
     // Skip done items for most checks
     const isDone = item.statusCategory === 'done';
 

@@ -26,6 +26,7 @@ describe('detectActionRequired', () => {
     type: 'story',
     status: 'In Progress',
     statusCategory: 'inprogress',
+    displayStatus: 'in-progress',
     assignee: 'John',
     parentKey: null,
     estimate: 5,
@@ -45,6 +46,18 @@ describe('detectActionRequired', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+  });
+
+  it('skips abandoned items entirely', () => {
+    const items = [
+      makeItem({ displayStatus: 'abandoned', blocked: true, assignee: null, estimate: null }),
+    ];
+    const result = detectActionRequired(items, config);
+
+    expect(result.blocked).toHaveLength(0);
+    expect(result.unassigned).toHaveLength(0);
+    expect(result.unestimated).toHaveLength(0);
+    expect(result.stale).toHaveLength(0);
   });
 
   it('detects blocked items', () => {

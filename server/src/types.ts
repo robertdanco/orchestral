@@ -2,6 +2,7 @@
 export type {
   IssueType,
   StatusCategory,
+  DisplayStatus,
   JiraItem,
   HierarchicalJiraItem,
   ActionRequiredItem,
@@ -19,14 +20,17 @@ export type {
 } from '@orchestral/shared';
 export { isValidJiraItem } from '@orchestral/shared';
 
+import type { IssueType, StatusCategory, DisplayStatus } from '@orchestral/shared';
+
 // Server-only types
 
 export interface JiraItemDetail {
   key: string;
   summary: string;
-  type: import('@orchestral/shared').IssueType;
+  type: IssueType;
   status: string;
-  statusCategory: import('@orchestral/shared').StatusCategory;
+  statusCategory: StatusCategory;
+  displayStatus: DisplayStatus;
   assignee: string | null;
   parentKey: string | null;
   estimate: number | null;
@@ -52,6 +56,6 @@ export interface Comment {
 export interface LinkedIssue {
   key: string;
   summary: string;
-  type: import('@orchestral/shared').IssueType;
+  type: IssueType;
   linkType: string;
 }

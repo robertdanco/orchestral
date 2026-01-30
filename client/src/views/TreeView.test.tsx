@@ -14,6 +14,7 @@ describe('TreeView', () => {
     type: type as any,
     status: 'To Do',
     statusCategory: 'todo',
+    displayStatus: 'backlog',
     assignee: null,
     parentKey: null,
     estimate: null,

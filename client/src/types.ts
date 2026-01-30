@@ -2,6 +2,8 @@
 export type {
   IssueType,
   StatusCategory,
+  DisplayStatus,
+  StatusGroup,
   JiraItem,
   HierarchicalJiraItem,
   ActionRequiredItem,
@@ -37,6 +39,9 @@ export type {
   JiraActionCategory,
   JiraActionSettings,
   UpdateJiraActionSettingsInput,
+  // Status Mapping types
+  StatusMappingConfig,
+  UpdateStatusMappingInput,
   // Google types
   GoogleDoc,
   ParsedActionItem,
@@ -54,4 +59,14 @@ export type {
   OnboardingStatus,
   UpdateOnboardingSettingsInput,
 } from '@orchestral/shared';
-export { isValidJiraItem, DEFAULT_JIRA_ACTION_SETTINGS, JIRA_ACTION_CATEGORY_LABELS, DEFAULT_ONBOARDING_SETTINGS } from '@orchestral/shared';
+export {
+  isValidJiraItem,
+  DEFAULT_JIRA_ACTION_SETTINGS,
+  JIRA_ACTION_CATEGORY_LABELS,
+  DEFAULT_ONBOARDING_SETTINGS,
+  DISPLAY_STATUS_COLUMNS,
+  STATUS_GROUP_MAP,
+  DISPLAY_STATUS_LABELS,
+  STATUS_GROUP_LABELS,
+  DEFAULT_STATUS_MAPPINGS,
+} from '@orchestral/shared';
